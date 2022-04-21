@@ -40,6 +40,13 @@ declare module 'styled-components' {
         200: string;
         50: string;
       };
+      green: {
+        800: string;
+        700: string;
+        500: string;
+        200: string;
+        50: string;
+      };
       gray: {
         800: string;
         700: string;
