@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Box = styled.div`
-  max-width: 100%;
+  width: 100%;
 
   .box {
     background: rgb(182, 255, 64);
@@ -13,23 +13,20 @@ export const Box = styled.div`
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 300px;
-    max-height: 100vh;
-    width: 100% !important;
+
+    img {
+      width: 100%;
+      height: 100%;
+    }
   }
 
   .miniBox {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 150px;
-    max-height: 50vh;
-    width: 100% !important;
     border-radius: 1rem;
 
     .img {
-      width: 100%;
-      height: 7rem;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -41,8 +38,11 @@ export const Box = styled.div`
         rgba(63, 255, 71, 1) 100%
       );
       border-radius: 1rem;
+      width: 15rem;
+      height: 8rem;
       img {
         width: 100%;
+        height: 100%;
       }
     }
 
@@ -58,10 +58,6 @@ export const Box = styled.div`
   .navigation-wrapper {
     position: relative;
     padding: 0 10%;
-
-    @media (max-width: 768px) {
-      width: 20rem;
-    }
   }
 
   .dots {

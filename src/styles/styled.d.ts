@@ -50,6 +50,7 @@ declare module 'styled-components' {
       };
       base: {
         bg: string;
+        bg2: string;
         text: string;
         links: string;
       };

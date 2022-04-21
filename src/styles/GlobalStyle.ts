@@ -44,7 +44,7 @@ const GlobalStyle = createGlobalStyle`
   h5,
   h6 {
     font-weight: 600;
-    font-family: Lexend, sans - serif;
+    font-family: Lexend, sans-serif;
     color: ${(props) => props.theme.colors.base.text};
 
   }

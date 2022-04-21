@@ -15,9 +15,9 @@ import { Box } from './styles';
 
 interface IProduct {
   id: number;
-  imgSrc: string;
-  imgAlt: string;
-  redirect: string;
+  imgSrc?: string;
+  imgAlt?: string;
+  redirect?: string;
   name?: string;
   price?: string;
 }
@@ -50,7 +50,7 @@ function Carousel({ products, type }: IProducts) {
   const [loaded, setLoaded] = useState(false);
   const { width: screen } = useViewport()
   const miniC = type === 'scroll' ? {
-    perView: screen >= 768 ? 6 : 4,
+    perView: screen >= 1024 ? 6 : screen >= 768 ? 5 : screen >= 425 ? 4 : 2,
     spacing: 15,
   } : {};
   const [sliderRef, instanceRef] = useKeenSlider<HTMLDivElement>(
@@ -114,11 +114,11 @@ function Carousel({ products, type }: IProducts) {
                 </div>
               );
             })
-            : type === 'scroll' ?
-              products.map((product) => {
+            : type === 'scroll'
+              ? products.map((product) => {
                 return (
                   <div key={product.id} className="keen-slider__slide miniBox">
-                    <Link href={product.redirect}>
+                    <Link href={product.redirect || ''}>
                       <a>
                         <div className="img">
                           <img src={product.imgSrc} alt={product.imgAlt} />
@@ -132,8 +132,8 @@ function Carousel({ products, type }: IProducts) {
                   </div>
                 );
               })
-
-              : ''}
+              : type === 'product' ? '' : ''
+          }
         </div>
         {loaded && instanceRef.current && (
           <>

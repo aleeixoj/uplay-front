@@ -1,5 +1,6 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
+import Link from 'next/link';
 import { FaBarcode, FaQrcode } from 'react-icons/fa';
 import { FiCreditCard } from 'react-icons/fi';
 
@@ -92,7 +93,9 @@ const Home: NextPage = () => {
       </Flex>
       <Flex>
         <span>Aqui você encontra de tudo!</span>
-        <StyledButton>navegar</StyledButton>
+        <Link href="/categories">
+          <StyledButton>navegar</StyledButton>
+        </Link>
       </Flex>
 
       <Carousel products={imgs} type="scroll" />
