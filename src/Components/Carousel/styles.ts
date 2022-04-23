@@ -52,6 +52,7 @@ export const Box = styled.div`
       align-items: center;
       flex-direction: column;
       color: ${(props) => props.theme.colors.base.text};
+      font-size: 0.875rem;
     }
   }
 

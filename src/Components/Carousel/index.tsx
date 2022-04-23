@@ -151,7 +151,8 @@ function Carousel({ products, type }: IProducts) {
               }
               disabled={
                 currentSlide ===
-                instanceRef.current.track.details.slides.length - 1
+                // eslint-disable-next-line no-unsafe-optional-chaining
+                instanceRef?.current?.track?.details?.slides?.length - 1
               }
             />
           </>
@@ -160,7 +161,7 @@ function Carousel({ products, type }: IProducts) {
       {loaded && instanceRef.current && (
         <div className="dots">
           {[
-            ...Array(instanceRef.current.track.details.slides.length).keys(),
+            ...Array(instanceRef?.current?.track?.details?.slides?.length).keys(),
           ].map((idx) => {
             return (
               <button
