@@ -167,9 +167,11 @@ function Header() {
                     </RoundedButton>
                   </StyledItem>
                   <StyledItem>
-                    <RoundedButton>
-                      <FiShoppingCart />
-                    </RoundedButton>
+                    <Link href="/cart">
+                      <RoundedButton>
+                        <FiShoppingCart />
+                      </RoundedButton>
+                    </Link>
                   </StyledItem>
                   <StyledIndicator />
                 </StyledList>

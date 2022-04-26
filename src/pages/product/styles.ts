@@ -255,6 +255,7 @@ export const ProductDescription = styled.div`
     gap: 10px;
     @media (min-width: 768px) {
       border-left: 1px solid ${(props) => props.theme.colors.gray[200]};
+      padding: 0 1rem;
     }
     .all {
       display: grid;

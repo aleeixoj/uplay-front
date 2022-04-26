@@ -213,15 +213,17 @@ export default function Product({ product }: ProductsProps) {
             type={'button'}
             onClick={() => console.log(qnt, product.id)}
           >
-            Comprar agora
+            Enviar para o carrinho
           </StyledButton>
-          <StyledButton type={'button'}>Enviar para o carrinho</StyledButton>
+          {/* <StyledButton type={'button'}>Enviar para o carrinho</StyledButton> */}
         </ProductCheckout>
       </div>
       <div className="bottom">
         <div className="carousel">
           <span>Mais produtos que possam te interessar</span>
-          <Carousel products={dataProducts} type="scroll" />
+          {dataProducts.length > 0 && (
+            <Carousel products={dataProducts} type="scroll" />
+          )}
         </div>
 
         <ProductDescription>
