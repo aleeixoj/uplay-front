@@ -25,6 +25,7 @@ interface IProduct {
 interface IProducts {
   type: string;
   products: IProduct[];
+
 }
 
 function Arrow(props: {
@@ -100,12 +101,15 @@ function Carousel({ products, type }: IProducts) {
 
   return (
     <Box>
+
       <div className="navigation-wrapper">
         <div ref={sliderRef} className="keen-slider">
+
           {type === 'banner'
             ? products.map((product) => {
               return (
                 <div key={product.id} className="keen-slider__slide box">
+
                   <Link href={product.redirect}>
                     <a>
                       <img src={product.imgSrc} alt={product.imgAlt} />
@@ -115,9 +119,12 @@ function Carousel({ products, type }: IProducts) {
               );
             })
             : type === 'scroll'
-              ? products.map((product) => {
+              ?
+
+              products.map((product) => {
                 return (
                   <div key={product.id} className="keen-slider__slide miniBox">
+
                     <Link href={product.redirect || ''}>
                       <a>
                         <div className="img">

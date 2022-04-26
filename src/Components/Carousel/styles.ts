@@ -2,6 +2,11 @@ import styled from 'styled-components';
 
 export const Box = styled.div`
   width: 100%;
+  /* display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 1rem; */
 
   .box {
     background: rgb(182, 255, 64);
