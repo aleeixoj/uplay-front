@@ -4,6 +4,7 @@ import { useRouter } from 'next/router';
 import { ThemeProvider } from 'styled-components';
 
 import { Header } from '../Components/Header';
+import AuthProvider from '../contexts/AuthContext';
 import { GlobalStyle } from '../styles/GlobalStyle';
 import light from '../styles/themes/light';
 
@@ -12,12 +13,14 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <>
       <ThemeProvider theme={light}>
-        <GlobalStyle />
-        {router.asPath !== '/login' && router.asPath !== '/register' && (
-          <Header />
-        )}
+        <AuthProvider>
+          <GlobalStyle />
+          {router.asPath !== '/login' && router.asPath !== '/register' && (
+            <Header />
+          )}
 
-        <Component {...pageProps} />
+          <Component {...pageProps} />
+        </AuthProvider>
       </ThemeProvider>
     </>
   );

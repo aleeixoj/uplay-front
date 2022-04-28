@@ -60,6 +60,7 @@ declare module 'styled-components' {
         bg2: string;
         text: string;
         links: string;
+        errors: string;
       };
     };
   }

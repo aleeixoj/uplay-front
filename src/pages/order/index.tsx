@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react';
-import { FiCheck, FiCreditCard } from 'react-icons/fi';
+import { FiCheck, FiCreditCard, FiX } from 'react-icons/fi';
 
 import { Carousel } from '../../Components/Carousel';
 import { api } from '../../service/api';
-import { Container, Success } from './styles';
+import { Container, Success, Declined, StyledButton } from './styles';
 
 export default function Order() {
   const [products, setProducts] = useState([]);
@@ -22,7 +22,7 @@ export default function Order() {
 
   return (
     <Container>
-      <Success>
+      {/* <Success>
         <div className="order">
           <h4>Pronto, seu pedido foi aprovado</h4>
           <h4>Número do pedido: 0000000000</h4>
@@ -49,7 +49,37 @@ export default function Order() {
 
         <h4>Talvez você também goste</h4>
         {products.length > 0 && <Carousel type="scroll" products={products} />}
-      </Success>
+      </Success> */}
+      <Declined>
+        <div className="order">
+          <h4>Houve uma falha com seu pagamento</h4>
+
+          <div className="rounded">
+            <FiX />
+          </div>
+        </div>
+
+        <div className="address">
+          <span>
+            Verifique os dados e tente novamente, caso persista entre em contato
+            com a central de seu cartão
+          </span>
+        </div>
+
+        <div className="payed">
+          <div className="icon">
+            <FiCreditCard />
+          </div>
+          <div className="desc">
+            <span className="value">1x de R$ 224,98</span>
+            <span className="total">Total R$224,98</span>
+          </div>
+        </div>
+        <StyledButton>Pagar com outra forma</StyledButton>
+
+        <h4>Talvez você se interesse por</h4>
+        {products.length > 0 && <Carousel type="scroll" products={products} />}
+      </Declined>
     </Container>
   );
 }

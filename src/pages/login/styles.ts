@@ -21,6 +21,15 @@ export const Top = styled.div`
   align-items: center;
   flex-direction: column;
   gap: 1rem;
+
+  .notAccount {
+    font-size: 0.75rem;
+    color: ${(props) => props.theme.colors.base.text};
+
+    a {
+      ${(props) => props.theme.colors.base.links};
+    }
+  }
 `;
 
 export const StyledInput = styled(Input)`
@@ -31,6 +40,9 @@ export const Logo = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20rem;
+  height: 20rem;
+  padding: 1rem;
 `;
 
 export const Separator = styled.div`

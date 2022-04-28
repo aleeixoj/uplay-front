@@ -56,6 +56,7 @@ const light = {
       bg2: '#f2f2f2',
       text: '#302E33',
       links: '#2F80ED',
+      errors: '#EB5757',
     },
   },
 };

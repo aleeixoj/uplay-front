@@ -26,7 +26,8 @@ const Login: NextPage = () => {
   const [eye, setEye] = useState(true);
   const [typePass, setTypePass] = useState('password');
   const { handleSubmit, register } = useForm();
-  const onSubmit: SubmitHandler<IInputProps> = (data: any) => {
+
+  const handleSignIn: SubmitHandler<IInputProps> = (data: any) => {
     console.log(data);
   };
 
@@ -42,18 +43,28 @@ const Login: NextPage = () => {
 
   return (
     <Container>
+      <Logo>
+        <Link href="/">
+          <a>
+            <Image src="/app.svg" width={320} height={320} />
+          </a>
+        </Link>
+      </Logo>
+
+      <Separator />
+
       <Top>
-        <Logo>
+        {/* <Logo>
           <Link href="/">
             <a>
               <Image src="/app.svg" width={100} height={100} />
             </a>
           </Link>
-        </Logo>
+        </Logo> */}
 
         <StyledForm
           onSubmit={handleSubmit((data: any) => {
-            onSubmit(data);
+            handleSignIn(data);
           })}
         >
           <StyledInput
@@ -83,10 +94,17 @@ const Login: NextPage = () => {
           </Link>
           <StyledButton type="submit"> Enviar </StyledButton>
         </StyledForm>
+        <span className="notAccount">
+          Vocẽ ainda não possui uma conta?
+          <Link href="/register">
+            <a>
+              <strong> Registre-se agora</strong>
+            </a>
+          </Link>
+        </span>
       </Top>
-      <Separator />
 
-      <Box>
+      {/* <Box>
         <span>Logar com</span>
 
         <Container>1</Container>
@@ -101,7 +119,7 @@ const Login: NextPage = () => {
             </a>
           </Link>
         </span>
-      </Box>
+      </Box> */}
     </Container>
   );
 };
