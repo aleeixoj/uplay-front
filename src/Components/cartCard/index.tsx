@@ -1,3 +1,4 @@
+/* eslint-disable no-plusplus */
 import Image from 'next/image';
 import { useContext, useState } from 'react';
 import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
@@ -58,22 +59,32 @@ export default function CartCard({ product, qtn }: ProductProps) {
 
   const [newQtn, setNewQtn] = useState(qtn);
 
-  const handleAddCart = async (newQtn: number, productId: string) => {
-    newQtn++;
-    setNewQtn(newQtn);
-    await api.post('/product/addToCart', {
-      productId,
-      qtn: newQtn,
-    });
-  };
-  const handleRmCart = async (newQtn: number, productId: string) => {
-    newQtn--;
-    if (newQtn > 0) {
+  const handleAddCart = async (
+    _newQtn: number,
+    productId: string,
+    productStock: number
+  ) => {
+    if (_newQtn < productStock) {
+      // eslint-disable-next-line no-param-reassign
+      _newQtn++;
+      setNewQtn(_newQtn);
       await api.post('/product/addToCart', {
         productId,
-        qtn: newQtn,
+        qtn: _newQtn,
       });
-      setNewQtn(newQtn);
+    } else {
+      console.log('ops');
+    }
+  };
+  const handleRmCart = async (_newQtn: number, productId: string) => {
+    // eslint-disable-next-line no-param-reassign
+    _newQtn--;
+    if (_newQtn > 0) {
+      await api.post('/product/addToCart', {
+        productId,
+        qtn: _newQtn,
+      });
+      setNewQtn(_newQtn);
     } else {
       await handleRemoveCart(productId);
     }
@@ -91,7 +102,11 @@ export default function CartCard({ product, qtn }: ProductProps) {
           <span className="frete">Frete grátis</span>
           <div className="productQtn">
             <div className="btn">
-              <RoundedButton onClick={() => handleAddCart(newQtn, product.id)}>
+              <RoundedButton
+                onClick={() =>
+                  handleAddCart(newQtn, product.id, Number(product.stock))
+                }
+              >
                 <FiPlus />
               </RoundedButton>
             </div>

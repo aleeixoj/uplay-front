@@ -104,7 +104,7 @@ export default function Cart() {
       user?.cart.productsQtn,
       (qtn) => qtn.productId === product.id
     );
-    console.log('carrinho', filtered);
+
     return filtered[0].qtn;
   };
 
