@@ -21,7 +21,6 @@ export const Container = styled.div`
     flex-direction: row;
     align-items: flex-end;
     justify-content: center;
-
     gap: 1.2rem;
     .left {
       display: flex;
@@ -39,6 +38,22 @@ export const Container = styled.div`
         font-size: 0.875rem;
         color: ${(props) => props.theme.colors.green[200]};
       }
+      .productQtn {
+        font-size: 0.875rem;
+        color: ${(props) => props.theme.colors.gray[200]};
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        .btn {
+          width: 1.5rem;
+          height: 1.5rem;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+      }
     }
 
     .rigth {
@@ -51,24 +66,32 @@ export const Container = styled.div`
       }
     }
   }
+  .removeCart {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: -1.2rem;
+    left: 4rem;
+  }
 `;
 
 export const RoundedButton = styled.button`
   color: ${(props) => props.theme.colors.rose[800]};
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 100%;
+  height: 100%;
   border-radius: 50%;
   display: flex;
   justify-content: center;
   align-items: center;
   background: none;
   transition: all 0.2s;
-  position: absolute;
-  bottom: -1.2rem;
-  left: 4rem;
+
   svg {
-    width: 1.5rem;
-    height: 1.5rem;
+    width: 50%;
+    height: 50%;
   }
   &:hover {
     background: ${(props) => props.theme.colors.gray[50]};

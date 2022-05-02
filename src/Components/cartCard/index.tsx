@@ -1,11 +1,33 @@
 import Image from 'next/image';
-import { useState } from 'react';
-import { FiTrash2 } from 'react-icons/fi';
+import { useContext, useState } from 'react';
+import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 
+import { AuthContext } from '../../contexts/AuthContext';
 import { StyledSelect } from '../../pages/product/styles';
+import { api } from '../../service/api';
 import { Container, RoundedButton } from './styles';
 
-export default function CartCard() {
+type Product = {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  warranty: string;
+  color: string;
+  reference: string;
+  code: string;
+  stock: string;
+  brand: string;
+  categoryId: string;
+};
+
+type ProductProps = {
+  product: Product;
+  qtn: number;
+};
+
+export default function CartCard({ product, qtn }: ProductProps) {
+  const { fillUserData } = useContext(AuthContext);
   const customStyles = {
     option: (provided) => ({
       ...provided,
@@ -27,6 +49,36 @@ export default function CartCard() {
     },
   };
 
+  const handleRemoveCart = async (id: string) => {
+    await api.put('/product/removeToCart', {
+      productId: id,
+    });
+    await fillUserData();
+  };
+
+  const [newQtn, setNewQtn] = useState(qtn);
+
+  const handleAddCart = async (newQtn: number, productId: string) => {
+    newQtn++;
+    setNewQtn(newQtn);
+    await api.post('/product/addToCart', {
+      productId,
+      qtn: newQtn,
+    });
+  };
+  const handleRmCart = async (newQtn: number, productId: string) => {
+    newQtn--;
+    if (newQtn > 0) {
+      await api.post('/product/addToCart', {
+        productId,
+        qtn: newQtn,
+      });
+      setNewQtn(newQtn);
+    } else {
+      await handleRemoveCart(productId);
+    }
+  };
+
   return (
     <Container>
       <div className="image">
@@ -34,17 +86,32 @@ export default function CartCard() {
       </div>
       <div className="info">
         <div className="left">
-          <span className="productName">Headset Gamer</span>
-          <span className="productColor">cor: Preto</span>
+          <span className="productName">{product.name}</span>
+          <span className="productColor">cor: {product.color}</span>
           <span className="frete">Frete grátis</span>
+          <div className="productQtn">
+            <div className="btn">
+              <RoundedButton onClick={() => handleAddCart(newQtn, product.id)}>
+                <FiPlus />
+              </RoundedButton>
+            </div>
+            {newQtn}
+            <div className="btn">
+              <RoundedButton onClick={() => handleRmCart(newQtn, product.id)}>
+                <FiMinus />
+              </RoundedButton>
+            </div>
+          </div>
         </div>
         <div className="rigth">
-          <span className="price">R$ 99,99</span>
+          <span className="price">{product.price}</span>
         </div>
       </div>
-      <RoundedButton>
-        <FiTrash2 />
-      </RoundedButton>
+      <div className="removeCart">
+        <RoundedButton onClick={() => handleRemoveCart(product.id)}>
+          <FiTrash2 />
+        </RoundedButton>
+      </div>
     </Container>
   );
 }

@@ -30,6 +30,15 @@ export const Products = styled.div`
     gap: 1rem;
   }
 
+  .notProducts {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 5rem;
+    gap: 1rem;
+  }
+
   .moreProducts {
     display: flex;
     align-items: center;

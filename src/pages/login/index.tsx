@@ -1,11 +1,12 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 import { RoundedButton } from '../../Components/Header/styles';
+import { AuthContext } from '../../contexts/AuthContext';
 import {
   Container,
   Logo,
@@ -26,9 +27,10 @@ const Login: NextPage = () => {
   const [eye, setEye] = useState(true);
   const [typePass, setTypePass] = useState('password');
   const { handleSubmit, register } = useForm();
+  const { signIn } = useContext(AuthContext);
 
-  const handleSignIn: SubmitHandler<IInputProps> = (data: any) => {
-    console.log(data);
+  const handleSignIn: SubmitHandler<IInputProps> = async (data: any) => {
+    await signIn(data);
   };
 
   const handleEye = () => {

@@ -222,7 +222,7 @@ export const Desktop = styled.header`
   align-items: center;
   flex-direction: column;
   height: 12rem;
-  background: #fff;
+  background: white;
   border-bottom: 1px solid ${(props) => props.theme.colors.gray[200]};
   .top {
     width: 100%;

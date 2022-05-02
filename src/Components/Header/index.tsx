@@ -1,7 +1,7 @@
 import * as NavigationMenuPrimitive from '@radix-ui/react-navigation-menu';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import {
   FiShoppingCart,
@@ -12,6 +12,7 @@ import {
 } from 'react-icons/fi';
 import { MdOutlineNotificationsNone } from 'react-icons/md';
 
+import { AuthContext } from '../../contexts/AuthContext';
 import { useViewport } from '../../hooks/useViewPort';
 import { Button } from '../Button';
 import Input from '../CustomInput';
@@ -44,6 +45,8 @@ function Header() {
     console.log(data);
   };
   const { width: screen } = useViewport();
+
+  const { user, isAuthenticated } = useContext(AuthContext);
 
   return (
     <>
@@ -104,14 +107,21 @@ function Header() {
           </div>
           <div className="bottom">
             <div className="address">
-              <div className="icon">
-                <FiMapPin />
-              </div>
-              <div className="text">
-                <span>Enviar para</span>
-                <span>Rua Nazilio Camargo</span>
-              </div>
+              {isAuthenticated ? (
+                <>
+                  <div className="icon">
+                    <FiMapPin />
+                  </div>
+                  <div className="text">
+                    <span>Enviar para</span>
+                    <span>{user?.address[0].street}</span>
+                  </div>
+                </>
+              ) : (
+                ''
+              )}
             </div>
+
             <div className="centerMenu">
               <StyledMenu>
                 <StyledList>
@@ -139,45 +149,51 @@ function Header() {
               </StyledMenu>
             </div>
             <div className="rightMenu">
-              <StyledMenu>
-                <StyledList>
-                  <StyledItem>
-                    <div className="avatar">
-                      <Avatar>
-                        <AvatarImage src={'/vercel.svg'} alt="Aleixo Junior" />
-                        <AvatarFallback delayMs={600}>AJ</AvatarFallback>
-                      </Avatar>
-                    </div>
+              {isAuthenticated ? (
+                <StyledMenu>
+                  <StyledList>
+                    <StyledItem>
+                      <div className="avatar">
+                        <Avatar>
+                          <AvatarImage src={user?.avatar} alt="Aleixo Junior" />
+                          <AvatarFallback delayMs={600}>AJ</AvatarFallback>
+                        </Avatar>
+                      </div>
 
-                    <div className="userName">
-                      <span>Aleixo</span>
-                    </div>
-                  </StyledItem>
+                      <div className="userName">
+                        <span>{user?.name.split(' ')[0]}</span>
+                      </div>
+                    </StyledItem>
 
-                  <StyledItem>
-                    <StyledLink href="/">Compras</StyledLink>
-                  </StyledItem>
+                    <StyledItem>
+                      <StyledLink href="/">Compras</StyledLink>
+                    </StyledItem>
 
-                  <StyledItem>
-                    <StyledLink href="/">Favoritos</StyledLink>
-                  </StyledItem>
-                  <StyledItem>
-                    <RoundedButton>
-                      <MdOutlineNotificationsNone />
-                    </RoundedButton>
-                  </StyledItem>
-                  <StyledItem>
-                    <Link href="/cart">
+                    <StyledItem>
+                      <StyledLink href="/">Favoritos</StyledLink>
+                    </StyledItem>
+                    <StyledItem>
                       <RoundedButton>
-                        <FiShoppingCart />
+                        <MdOutlineNotificationsNone />
                       </RoundedButton>
-                    </Link>
-                  </StyledItem>
-                  <StyledIndicator />
-                </StyledList>
+                    </StyledItem>
+                    <StyledItem>
+                      <Link href="/cart">
+                        <RoundedButton>
+                          <FiShoppingCart />
+                        </RoundedButton>
+                      </Link>
+                    </StyledItem>
+                    <StyledIndicator />
+                  </StyledList>
 
-                <NavigationMenuPrimitive.Viewport />
-              </StyledMenu>
+                  <NavigationMenuPrimitive.Viewport />
+                </StyledMenu>
+              ) : (
+                <Link href="/login">
+                  <a>Fazer login</a>
+                </Link>
+              )}
             </div>
           </div>
         </Desktop>

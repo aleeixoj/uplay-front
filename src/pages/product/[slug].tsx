@@ -4,11 +4,13 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
+import Router from 'next/router';
+import { useContext, useEffect, useState } from 'react';
 import { FiCreditCard, FiHeart, FiShare2, FiTruck } from 'react-icons/fi';
 
 import { Carousel } from '../../Components/Carousel';
 import { RoundedButton } from '../../Components/Header/styles';
+import { AuthContext } from '../../contexts/AuthContext';
 import { api } from '../../service/api';
 import { Separator } from '../login/styles';
 import {
@@ -124,7 +126,7 @@ export default function Product({ product }: ProductsProps) {
 
   const [dataProducts, setDataProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
-
+  const { fillUserData } = useContext(AuthContext);
   useEffect(() => {
     const getAllProducts = async () => {
       const response = await api.get(`/product/all`, {
@@ -148,6 +150,12 @@ export default function Product({ product }: ProductsProps) {
     getAllProducts();
     getProductsByCategory();
   }, []);
+
+  const handleSendToCart = async (qtn: number, id: string) => {
+    await api.post('/product/addToCart', { productId: id, qtn });
+    await fillUserData();
+    Router.push('/cart');
+  };
 
   return (
     <Container>
@@ -211,7 +219,7 @@ export default function Product({ product }: ProductsProps) {
         <ProductCheckout>
           <StyledButton
             type={'button'}
-            onClick={() => console.log(qnt, product.id)}
+            onClick={() => handleSendToCart(qnt, product.id)}
           >
             Enviar para o carrinho
           </StyledButton>
@@ -352,7 +360,6 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
   const { data } = await api.get(`/product/${slug}`);
-  console.log('data >>', data);
   const product = {
     id: data.id,
     name: data.name,

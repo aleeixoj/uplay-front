@@ -1,34 +1,122 @@
-import { setCookie } from 'nookies';
-import { createContext } from 'use-context-selector';
+import Router from 'next/router';
+import { setCookie, parseCookies } from 'nookies';
+import { createContext, useEffect, useState } from 'react';
 
 import { api } from '../service/api';
-
-type AuthContextType = {
-  isAuthenticated: boolean;
-};
 
 type SignInData = {
   email: string;
   password: string;
 };
 
+type Address = {
+  street: string;
+  city: string;
+  state: string;
+  province: string;
+  number: string;
+  complement: string;
+  name?: string;
+};
+type Profile = {
+  id: string;
+  name: string;
+  created_at: string;
+  updated_at: string;
+  resourceIds: string[];
+};
+type Product = {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  warranty: string;
+  brand: string;
+  color: string;
+  reference: string;
+  code: string;
+  stock: string;
+  created_at: string;
+  updated_at: string;
+  note: any;
+  cartId: any[];
+  favoritesId: any[];
+  ordersId: any[];
+  categoryId: string;
+};
+type ProductQtn = {
+  productId: string;
+  qtn: number;
+};
+type Cart = {
+  userId: string;
+  productsIds: string[];
+  products: Product[];
+  productsQtn: ProductQtn[];
+};
+
+type User = {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  password: string;
+  avatar: string;
+  status: string;
+  created_at: string;
+  updated_at: string;
+  profileId: string;
+  address: Address[];
+  ordersId: any[];
+  profile: Profile;
+  cart: Cart;
+};
+
+type AuthContextType = {
+  isAuthenticated: boolean;
+  user: User | null;
+  signIn: (data: SignInData) => Promise<void>;
+  fillUserData: () => Promise<void>;
+};
+
 export const AuthContext = createContext({} as AuthContextType);
 
 export default function AuthProvider({ children }) {
-  const isAuthenticated = false;
+  const [user, setUser] = useState<User | null>(null);
+  const isAuthenticated = !!user;
+
+  const fillUserData = async () => {
+    const { data } = await api.get('/user/fill');
+    setUser(data);
+  };
+
+  useEffect(() => {
+    const { 'uplay.token': token } = parseCookies();
+
+    if (token) {
+      fillUserData();
+    }
+  }, []);
 
   async function signIn({ email, password }: SignInData) {
-    const { data } = await api.get('/sessions', { email, password });
+    const { data } = await api.post('/sessions', { email, password });
 
     setCookie(undefined, 'uplay.token', data.token, {
       maxAge: 60 * 60 * 1, // 1 hour
     });
+    // eslint-disable-next-line dot-notation
+    api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
+    fillUserData();
+    Router.push('/');
   }
 
   return (
     <AuthContext.Provider
       value={{
         isAuthenticated,
+        signIn,
+        user,
+        fillUserData,
       }}
     >
       {children}
