@@ -1,14 +1,24 @@
+/* eslint-disable prettier/prettier */
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState, useEffect } from 'react';
 
+import { GetStringPrice } from '../../common/getStringPrice';
 import { api } from '../../service/api';
 import { Container, Box, Left, Right, Top } from './styles';
+
+type ProductImage = {
+  id: string;
+  productId: string;
+  image_name: string;
+  image_url: string;
+};
 
 type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   description: string;
   warranty: string;
   color: string;
@@ -17,13 +27,14 @@ type Product = {
   stock: string;
   brand: string;
   categoryId: string;
+  product_image: ProductImage[];
 };
 
 type ProductsProps = {
   products: Product[];
 };
 
-export default function Category({ products }: ProductsProps) {
+export default function Products({ products }: ProductsProps) {
   return (
     <Container>
       <Top>
@@ -38,14 +49,14 @@ export default function Category({ products }: ProductsProps) {
               <Box>
                 <div className="img">
                   <Image
-                    src={`${process.env.NEXT_PUBLIC_URL_API}/product/images/${product.id}`}
+                    src={`${product?.product_image[0]?.image_url}`}
                     width="100%"
                     height="100%"
                   />
                 </div>
                 <div className="texts">
                   <span>{product.name}</span>
-                  <span>{product.price}</span>
+                  <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
                 </div>
               </Box>
             </Link>
@@ -80,7 +91,20 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
   const { data } = await api.get(`/product/by_category/${slug}`);
+
   const products = data.map((product: Product) => {
+    const productsImages =
+      product.product_image?.length > 0
+        ? product.product_image?.map((_product: ProductImage) => {
+
+          return {
+            id: _product.id,
+            image_name: _product.image_name,
+            image_url: _product.image_url,
+            productId: _product.productId,
+          };
+        })
+        : [{ image_url: '/' }];
     return {
       id: product.id,
       name: product.name,
@@ -93,6 +117,10 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
       stock: product.stock,
       brand: product.brand,
       categoryId: product.categoryId,
+      product_image:
+        product.product_image?.length > 0
+          ? product.product_image
+          : [{ image_url: '/' }],
     };
   });
   return {

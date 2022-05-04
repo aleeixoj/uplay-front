@@ -127,6 +127,7 @@ function Header() {
                 <StyledList>
                   <StyledItem>
                     <StyledTrigger>Categorias</StyledTrigger>
+                    <StyledIndicator />
                     <StyledContent>
                       <StyledLink href="/">Acessórios</StyledLink>
                       <StyledLink href="/">Áudio e vídeo</StyledLink>
@@ -140,7 +141,9 @@ function Header() {
                   </StyledItem>
 
                   <StyledItem>
-                    <StyledLink href="/">Todos os produtos</StyledLink>
+                    <StyledLink href="/categories">
+                      Todos os produtos
+                    </StyledLink>
                   </StyledItem>
                   <StyledIndicator />
                 </StyledList>
@@ -155,7 +158,10 @@ function Header() {
                     <StyledItem>
                       <div className="avatar">
                         <Avatar>
-                          <AvatarImage src={user?.avatar} alt="Aleixo Junior" />
+                          <AvatarImage
+                            src={user?.avatar_url}
+                            alt="Aleixo Junior"
+                          />
                           <AvatarFallback delayMs={600}>AJ</AvatarFallback>
                         </Avatar>
                       </div>
@@ -184,9 +190,12 @@ function Header() {
                         </RoundedButton>
                       </Link>
                     </StyledItem>
-                    <StyledIndicator />
                   </StyledList>
-
+                  {user?.profile.name === 'admin_user' && (
+                    <StyledItem>
+                      <StyledLink href="/dashboard">Dashboard</StyledLink>
+                    </StyledItem>
+                  )}
                   <NavigationMenuPrimitive.Viewport />
                 </StyledMenu>
               ) : (

@@ -52,7 +52,7 @@ export default function Checkout() {
       <Box>
         {cards.map((card) => {
           return (
-            <Item key={card.value}>
+            <Item key={card.value} onClick={() => console.log(card.bandeira)}>
               <div className="icon">
                 <FiCreditCard />
               </div>
@@ -73,7 +73,7 @@ export default function Checkout() {
       <Box>
         {cards2.map((card) => {
           return (
-            <Item key={card.value}>
+            <Item key={card.value} onClick={() => console.log(card.value)}>
               <div className="icon">
                 <FiBarChart2 />
               </div>

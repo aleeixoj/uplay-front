@@ -237,6 +237,7 @@ export const Desktop = styled.header`
     display: flex;
     justify-content: space-between;
     align-items: center;
+    gap: 1rem;
     .address {
       display: flex;
       align-items: center;

@@ -1,67 +1,27 @@
 import type { NextPage } from 'next';
-import Image from 'next/image';
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
 import { FaBarcode, FaQrcode } from 'react-icons/fa';
 import { FiCreditCard } from 'react-icons/fi';
 
 import { Carousel } from '../Components/Carousel';
+import { api } from '../service/api';
 import { Container, Flex, StyledButton, Payments } from '../styles/Home';
 
 const Home: NextPage = () => {
-  const imgs = [
-    {
-      imgSrc: '/landing.svg',
-      id: 1,
-      imgAlt: 'Landing',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/vercel.svg',
-      id: 2,
-      imgAlt: 'Vercel',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 3,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 4,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 5,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 6,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-  ];
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const { data } = await api.get('product/all');
+      setProducts(data);
+    };
+    getProducts();
+  }, []);
 
   return (
     <Container>
-      <Carousel products={imgs} type="banner" />
+      {/* <Carousel banners={imgs} type="banner" /> */}
 
       <Flex>
         <Payments>
@@ -98,7 +58,7 @@ const Home: NextPage = () => {
         </Link>
       </Flex>
 
-      <Carousel products={imgs} type="scroll" />
+      <Carousel products={products} type="scroll" />
     </Container>
   );
 };

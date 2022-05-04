@@ -10,21 +10,45 @@ import {
   MdOutlineArrowBackIos,
 } from 'react-icons/md';
 
+import { GetStringPrice } from '../../common/getStringPrice';
 import { useViewport } from '../../hooks/useViewPort';
 import { Box } from './styles';
 
-interface IProduct {
-  id: number;
-  imgSrc?: string;
-  imgAlt?: string;
-  redirect?: string;
-  name?: string;
-  price?: string;
+interface IProductImages {
+  id: string;
+  productId: string;
+  image_name: string;
+  image_url: string;
 }
 
-interface IProducts {
+interface IProduct {
+  id: string;
+  name: string;
+  price: number;
+  description: string;
+  warranty: string;
+  color: string;
+  reference: string;
+  code: string;
+  stock: string;
+  brand: string;
+  categoryId: string;
+  comments: Comment[];
+  product_image: IProductImages[];
+}
+
+interface IBanners {
+  id: string;
+  src: string;
+  redirectTo: string;
+  desc: string;
+}
+
+interface ICarouselProps {
   type: string;
-  products: IProduct[];
+  products?: IProduct[];
+  banners?: IBanners[];
+  productImages?: IProductImages[];
 
 }
 
@@ -46,7 +70,7 @@ function Arrow(props: {
   );
 }
 
-function Carousel({ products, type }: IProducts) {
+function Carousel({ banners, productImages, products, type }: ICarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
   const { width: screen } = useViewport()
@@ -106,13 +130,13 @@ function Carousel({ products, type }: IProducts) {
         <div ref={sliderRef} className="keen-slider">
 
           {type === 'banner'
-            ? products.map((product) => {
+            ? banners?.map((banner) => {
               return (
-                <div key={product.id} className="keen-slider__slide box">
+                <div key={banner.id} className="keen-slider__slide box">
 
-                  <Link href={product.redirect}>
+                  <Link href={banner.redirectTo}>
                     <a>
-                      <img src={product.imgSrc} alt={product.imgAlt} />
+                      <img src={banner.src} alt={banner.desc} />
                     </a>
                   </Link>
                 </div>
@@ -120,19 +144,19 @@ function Carousel({ products, type }: IProducts) {
             })
             : type === 'scroll'
               ?
-
-              products.map((product) => {
+              products?.map((product) => {
                 return (
                   <div key={product.id} className="keen-slider__slide miniBox">
 
-                    <Link href={product.redirect || ''}>
+                    <Link href={`/product/${product.id}`}>
                       <a>
                         <div className="img">
-                          <img src={product.imgSrc} alt={product.imgAlt} />
+                          <Image width="100%" height="100%"
+                            src={`${product.product_image?.[0]?.image_url || '/'}`} alt={product?.product_image[0]?.image_name} />
                         </div>
                         <div className="texts">
                           <span>{product.name}</span>
-                          <span>{product.price}</span>
+                          <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
                         </div>
                       </a>
                     </Link>

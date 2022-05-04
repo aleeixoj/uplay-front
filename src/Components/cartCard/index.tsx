@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useContext, useState } from 'react';
 import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 
+import { GetStringPrice } from '../../common/getStringPrice';
 import { AuthContext } from '../../contexts/AuthContext';
 import { StyledSelect } from '../../pages/product/styles';
 import { api } from '../../service/api';
@@ -11,7 +12,7 @@ import { Container, RoundedButton } from './styles';
 type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   description: string;
   warranty: string;
   color: string;
@@ -62,7 +63,8 @@ export default function CartCard({ product, qtn }: ProductProps) {
   const handleAddCart = async (
     _newQtn: number,
     productId: string,
-    productStock: number
+    productStock: number,
+    price: number
   ) => {
     if (_newQtn < productStock) {
       // eslint-disable-next-line no-param-reassign
@@ -71,20 +73,26 @@ export default function CartCard({ product, qtn }: ProductProps) {
       await api.post('/product/addToCart', {
         productId,
         qtn: _newQtn,
+        price,
       });
-    } else {
-      console.log('ops');
+      fillUserData();
     }
   };
-  const handleRmCart = async (_newQtn: number, productId: string) => {
+  const handleRmCart = async (
+    _newQtn: number,
+    productId: string,
+    price: number
+  ) => {
     // eslint-disable-next-line no-param-reassign
     _newQtn--;
     if (_newQtn > 0) {
       await api.post('/product/addToCart', {
         productId,
         qtn: _newQtn,
+        price,
       });
       setNewQtn(_newQtn);
+      fillUserData();
     } else {
       await handleRemoveCart(productId);
     }
@@ -104,7 +112,12 @@ export default function CartCard({ product, qtn }: ProductProps) {
             <div className="btn">
               <RoundedButton
                 onClick={() =>
-                  handleAddCart(newQtn, product.id, Number(product.stock))
+                  handleAddCart(
+                    newQtn,
+                    product.id,
+                    Number(product.stock),
+                    product.price
+                  )
                 }
               >
                 <FiPlus />
@@ -112,14 +125,18 @@ export default function CartCard({ product, qtn }: ProductProps) {
             </div>
             {newQtn}
             <div className="btn">
-              <RoundedButton onClick={() => handleRmCart(newQtn, product.id)}>
+              <RoundedButton
+                onClick={() => handleRmCart(newQtn, product.id, product.price)}
+              >
                 <FiMinus />
               </RoundedButton>
             </div>
           </div>
         </div>
         <div className="rigth">
-          <span className="price">{product.price}</span>
+          <span className="price">
+            R$ {GetStringPrice.getStringPrice(product.price)}
+          </span>
         </div>
       </div>
       <div className="removeCart">

@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import { GetServerSideProps } from 'next';
-import Link from 'next/link';
+import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import { useContext, useState } from 'react';
 
@@ -12,11 +12,12 @@ import { Container, ProductCheckout, StyledButton, Products } from './styles';
 type ProductQtn = {
   productId: string;
   qtn: number;
+  totalPrice: number;
 };
 type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   description: string;
   warranty: string;
   color: string;
@@ -81,25 +82,25 @@ export default function Cart() {
 
   const { user } = useContext(AuthContext);
 
-  const getTotal = (products = user?.cart.products): string => {
+  const getTotal = (
+    products = user?.cart.products,
+    productsQtn = user?.cart.productsQtn
+  ): string => {
     let total = 0;
-    let value: number[] = [];
+    let value: string[] = [];
     if (!_.isNil(products)) {
-      value = products.map((product: Product) => {
-        const [, strPrice] = product.price.split(' ');
-        const [op1, op2] = strPrice.split(',');
-        const price = `${op1}.${op2}`;
+      value = productsQtn?.map((product: ProductQtn) => {
+        // eslint-disable-next-line no-multi-assign
+        const newValue = (total += product.totalPrice);
 
-        const newPrice = parseFloat(price);
-        // eslint-disable-next-line no-return-assign
-        return (total += newPrice);
+        return newValue.toFixed(2).toString().replace('.', ',');
       });
     }
 
     return `R$ ${value.slice(-1)}`;
   };
 
-  const handleProductQtn = (product) => {
+  const handleProductQtn = (product: Product) => {
     const filtered = _.filter(
       user?.cart.productsQtn,
       (qtn) => qtn.productId === product.id
@@ -126,10 +127,8 @@ export default function Cart() {
         ) : (
           <div className="notProducts">
             <span>Você ainda não possui produtos no carrinho</span>
-            <StyledButton>
-              <Link href="/categories">
-                <a>Navegar entre produtos</a>
-              </Link>
+            <StyledButton onClick={() => Router.push('/categories')}>
+              Navegar entre produtos
             </StyledButton>
           </div>
         )}
@@ -151,7 +150,10 @@ export default function Cart() {
           <span className="valor">{getTotal()}</span>
         </div>
 
-        <StyledButton type="submit"> Finalizar compra </StyledButton>
+        <StyledButton type="button" onClick={() => Router.push('/checkout')}>
+          {' '}
+          Finalizar compra{' '}
+        </StyledButton>
       </ProductCheckout>
     </Container>
   );

@@ -28,7 +28,7 @@ type Profile = {
 type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   description: string;
   warranty: string;
   brand: string;
@@ -47,6 +47,7 @@ type Product = {
 type ProductQtn = {
   productId: string;
   qtn: number;
+  totalPrice: number;
 };
 type Cart = {
   userId: string;
@@ -70,6 +71,7 @@ type User = {
   ordersId: any[];
   profile: Profile;
   cart: Cart;
+  avatar_url: string;
 };
 
 type AuthContextType = {
@@ -86,7 +88,7 @@ export default function AuthProvider({ children }) {
   const isAuthenticated = !!user;
 
   const fillUserData = async () => {
-    const { data } = await api.get('/user/fill');
+    const { data } = await api.get('/users/profile');
     setUser(data);
   };
 

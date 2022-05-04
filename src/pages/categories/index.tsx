@@ -79,7 +79,7 @@ export default function Categories({ categories }: ICategoriesProps) {
       <h4>Categorias</h4>
       <Middle>
         {categories.map((category) => (
-          <Link key={category.id} href={`/category/${category.id}`}>
+          <Link key={category.id} href={`/products/${category.id}`}>
             <a>
               <CategoryCard name={category.name} image={category.image} />
             </a>

@@ -30,7 +30,7 @@ export const Item = styled.div`
   flex-wrap: wrap;
   gap: 0.75rem;
   padding: 0.75rem;
-
+  cursor: pointer;
   &::after {
     content: '';
     height: 1px;

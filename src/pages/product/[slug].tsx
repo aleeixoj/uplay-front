@@ -8,11 +8,11 @@ import Router from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { FiCreditCard, FiHeart, FiShare2, FiTruck } from 'react-icons/fi';
 
+import { GetStringPrice } from '../../common/getStringPrice';
 import { Carousel } from '../../Components/Carousel';
 import { RoundedButton } from '../../Components/Header/styles';
 import { AuthContext } from '../../contexts/AuthContext';
 import { api } from '../../service/api';
-import { Separator } from '../login/styles';
 import {
   Container,
   ProductImage,
@@ -62,10 +62,17 @@ type Comment = {
   user: User;
 };
 
+type ProductImage = {
+  id: string;
+  productId: string;
+  image_name: string;
+  image_url: string;
+};
+
 type Product = {
   id: string;
   name: string;
-  price: string;
+  price: number;
   description: string;
   warranty: string;
   color: string;
@@ -75,6 +82,7 @@ type Product = {
   brand: string;
   categoryId: string;
   comments: Comment[];
+  product_image: ProductImage[];
 };
 
 type ProductsProps = {
@@ -88,8 +96,13 @@ type Stock = {
 };
 
 export default function Product({ product }: ProductsProps) {
-  const [, numberPrice] = product.price.split(' ');
-  const quota = (parseInt(numberPrice, 10) / 10).toFixed(2);
+  const [strPrice, setStrPrice] = useState('');
+
+  useEffect(() => {
+    setStrPrice(GetStringPrice.getStringPrice(product.price));
+  }, []);
+
+  const quota = (product.price / 10).toFixed(2).toString().replace('.', ',');
 
   const newStock: Array<Stock> = [];
   for (let index = 0; index < Number(product.stock); index++) {
@@ -126,7 +139,7 @@ export default function Product({ product }: ProductsProps) {
 
   const [dataProducts, setDataProducts] = useState([]);
   const [allProducts, setAllProducts] = useState([]);
-  const { fillUserData } = useContext(AuthContext);
+  const { fillUserData, isAuthenticated } = useContext(AuthContext);
   useEffect(() => {
     const getAllProducts = async () => {
       const response = await api.get(`/product/all`, {
@@ -151,23 +164,29 @@ export default function Product({ product }: ProductsProps) {
     getProductsByCategory();
   }, []);
 
-  const handleSendToCart = async (qtn: number, id: string) => {
-    await api.post('/product/addToCart', { productId: id, qtn });
-    await fillUserData();
-    Router.push('/cart');
+  const handleSendToCart = async (qtn: number, id: string, price: number) => {
+    if (isAuthenticated === true) {
+      await api.post('/product/addToCart', { productId: id, qtn, price });
+      await fillUserData();
+      Router.push('/cart');
+    }
   };
 
   return (
     <Container>
       <ProductImage>
-        <h3>Ola</h3>
+        <Image
+          src={`${product.product_image[0].image_url}`}
+          width="100%"
+          height="100%"
+        />
       </ProductImage>
       <div className="div">
         <ProductInfo>
           <div className="texts">
             <div className="info">
               <span>{product.name}</span>
-              <span>{product.price}</span>
+              <span>R$ {strPrice}</span>
               <span style={{ color: 'green' }}>Em até 10x de R$ {quota}</span>
             </div>
 
@@ -219,7 +238,7 @@ export default function Product({ product }: ProductsProps) {
         <ProductCheckout>
           <StyledButton
             type={'button'}
-            onClick={() => handleSendToCart(qnt, product.id)}
+            onClick={() => handleSendToCart(qnt, product.id, product.price)}
           >
             Enviar para o carrinho
           </StyledButton>
@@ -314,14 +333,15 @@ export default function Product({ product }: ProductsProps) {
                       <Box>
                         <div className="img">
                           <Image
-                            src={`${process.env.NEXT_PUBLIC_URL_API}/product/images/${_product.id}`}
+                            src={`${_product?.product_image[0]?.image_url || '/'
+                              }`}
                             width="100%"
                             height="100%"
                           />
                         </div>
                         <div className="texts">
                           <span>{_product.name}</span>
-                          <span>{_product.price}</span>
+                          <span>R$ {_product.price}</span>
                         </div>
                       </Box>
                     </Link>
@@ -360,6 +380,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
   const { data } = await api.get(`/product/${slug}`);
+
   const product = {
     id: data.id,
     name: data.name,
@@ -373,6 +394,10 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
     brand: data.brand,
     categoryId: data.categoryId,
     comments: data.comments,
+    product_image:
+      data.product_image?.length > 0
+        ? data.product_image
+        : [{ image_url: '/' }],
   };
 
   return {
