@@ -224,6 +224,7 @@ export const Desktop = styled.header`
   height: 12rem;
   background: white;
   border-bottom: 1px solid ${(props) => props.theme.colors.gray[200]};
+
   .top {
     width: 100%;
     display: flex;

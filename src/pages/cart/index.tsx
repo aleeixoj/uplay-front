@@ -114,15 +114,13 @@ export default function Cart() {
       <Products>
         {user?.cart?.products?.length > 0 ? (
           <div className="products">
-            {user?.cart.products?.map((product: Product) => {
-              return (
-                <CartCard
-                  key={product.id}
-                  product={product}
-                  qtn={handleProductQtn(product)}
-                />
-              );
-            })}
+            {user?.cart.products?.map((product: Product) => (
+              <CartCard
+                key={product.id}
+                product={product}
+                qtn={handleProductQtn(product)}
+              />
+            ))}
           </div>
         ) : (
           <div className="notProducts">

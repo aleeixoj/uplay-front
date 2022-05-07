@@ -24,4 +24,7 @@ export const Img = styled.div`
   width: 100%;
   height: 6rem;
   border-radius: 1rem;
+  span {
+    border-radius: 1rem;
+  }
 `;

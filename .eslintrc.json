@@ -6,11 +6,10 @@
     "jest": true
   },
   "extends": [
+    "plugin:prettier/recommended",
     "plugin:react/recommended",
     "airbnb-base",
-    "plugin:@typescript-eslint/recommended",
-    "prettier",
-    "plugin:prettier/recommended"
+    "plugin:@typescript-eslint/recommended"
   ],
   "parser": "@typescript-eslint/parser",
   "parserOptions": {
@@ -24,12 +23,11 @@
     "react",
     "eslint-plugin-import-helpers",
     "@typescript-eslint",
-    "prettier",
     "eslint-plugin-styled-components-a11y"
   ],
   "rules": {
     "prettier/prettier": [
-      "error",
+      "warn",
       {
         "singleQuote": true,
         "endOfLine": "auto"

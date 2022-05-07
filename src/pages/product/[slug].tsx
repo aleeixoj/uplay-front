@@ -62,7 +62,7 @@ type Comment = {
   user: User;
 };
 
-type ProductImage = {
+type IProductImages = {
   id: string;
   productId: string;
   image_name: string;
@@ -82,7 +82,7 @@ type Product = {
   brand: string;
   categoryId: string;
   comments: Comment[];
-  product_image: ProductImage[];
+  product_image: IProductImages[];
 };
 
 type ProductsProps = {
@@ -117,7 +117,7 @@ export default function Product({ product }: ProductsProps) {
   const [qnt, setQnt] = useState(newStock[0].value);
 
   const customStyles = {
-    option: (provided) => ({
+    option: (provided: any) => ({
       ...provided,
       fontWeight: 400,
       padding: 10,
@@ -129,7 +129,7 @@ export default function Product({ product }: ProductsProps) {
       justifyContent: 'center',
       width: 'auto',
     }),
-    singleValue: (provided, state) => {
+    singleValue: (provided: any, state: any) => {
       const opacity = state.isDisabled ? 0.5 : 1;
       const transition = 'opacity 300ms';
 
@@ -137,12 +137,12 @@ export default function Product({ product }: ProductsProps) {
     },
   };
 
-  const [dataProducts, setDataProducts] = useState([]);
-  const [allProducts, setAllProducts] = useState([]);
+  const [dataProducts, setDataProducts] = useState<Product[]>([]);
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
   const { fillUserData, isAuthenticated } = useContext(AuthContext);
   useEffect(() => {
     const getAllProducts = async () => {
-      const response = await api.get(`/product/all`, {
+      const response = await api.get('/product/all', {
         params: {
           limit: 6,
         },
@@ -175,11 +175,12 @@ export default function Product({ product }: ProductsProps) {
   return (
     <Container>
       <ProductImage>
-        <Image
+        <Carousel type="productimg" productImages={product.product_image} />
+        {/* <Image
           src={`${product.product_image[0].image_url}`}
           width="100%"
           height="100%"
-        />
+        /> */}
       </ProductImage>
       <div className="div">
         <ProductInfo>
@@ -214,7 +215,7 @@ export default function Product({ product }: ProductsProps) {
                   styles={customStyles}
                   defaultValue={newStock[0]}
                   options={newStock}
-                  onChange={({ value }) => setQnt(value)}
+                  onChange={({ value }: any) => setQnt(value)}
                 />
 
                 <span>
@@ -293,32 +294,30 @@ export default function Product({ product }: ProductsProps) {
             <div className="comment">
               <h4>Opiniões sobre o produto</h4>
               {product.comments.length > 0 ? (
-                product.comments.map((comment) => {
-                  return (
-                    <div key={comment.id} className="commentContent">
-                      <div className="avatar">
-                        <Avatar>
-                          <AvatarImage
-                            src={comment.user.avatar}
-                            alt={comment.user.name}
-                          />
-                          <AvatarFallback delayMs={600}>
-                            {comment?.user?.name
-                              ?.match(/(\b\S)?/g)
-                              ?.join('')
-                              ?.match(/(^\S|\S$)?/g)
-                              ?.join('')
-                              ?.toUpperCase()}
-                          </AvatarFallback>
-                        </Avatar>
-                      </div>
-                      <div className="commentInfo">
-                        <h4>{comment.user?.name}</h4>
-                        <span>{comment.comment}</span>
-                      </div>
+                product.comments.map((comment) => (
+                  <div key={comment.id} className="commentContent">
+                    <div className="avatar">
+                      <Avatar>
+                        <AvatarImage
+                          src={comment.user.avatar}
+                          alt={comment.user.name}
+                        />
+                        <AvatarFallback delayMs={600}>
+                          {comment?.user?.name
+                            ?.match(/(\b\S)?/g)
+                            ?.join('')
+                            ?.match(/(^\S|\S$)?/g)
+                            ?.join('')
+                            ?.toUpperCase()}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
-                  );
-                })
+                    <div className="commentInfo">
+                      <h4>{comment.user?.name}</h4>
+                      <span>{comment.comment}</span>
+                    </div>
+                  </div>
+                ))
               ) : (
                 <span>Nenhum comentário até o momento</span>
               )}
@@ -327,26 +326,25 @@ export default function Product({ product }: ProductsProps) {
             <div className="moreProducts">
               <h5>Mais produtos que voce possa gostar</h5>
               <div className="all">
-                {allProducts.map((_product: Product) => {
-                  return (
-                    <Link href={`/product/${_product.id}`} key={_product.id}>
-                      <Box>
-                        <div className="img">
-                          <Image
-                            src={`${_product?.product_image[0]?.image_url || '/'
-                              }`}
-                            width="100%"
-                            height="100%"
-                          />
-                        </div>
-                        <div className="texts">
-                          <span>{_product.name}</span>
-                          <span>R$ {_product.price}</span>
-                        </div>
-                      </Box>
-                    </Link>
-                  );
-                })}
+                {allProducts.map((_product: Product) => (
+                  <Link href={`/product/${_product.id}`} key={_product.id}>
+                    <Box>
+                      <div className="img">
+                        <Image
+                          src={`${
+                            _product?.product_image[0]?.image_url || '/'
+                          }`}
+                          width="100%"
+                          height="100%"
+                        />
+                      </div>
+                      <div className="texts">
+                        <span>{_product.name}</span>
+                        <span>R$ {_product.price}</span>
+                      </div>
+                    </Box>
+                  </Link>
+                ))}
               </div>
             </div>
           </div>
@@ -364,13 +362,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
     },
   });
 
-  const paths = data.map((product: any) => {
-    return {
-      params: {
-        slug: product.id,
-      },
-    };
-  });
+  const paths = data.map((product: any) => ({
+    params: {
+      slug: product.id,
+    },
+  }));
   return {
     paths,
     fallback: 'blocking',
@@ -378,7 +374,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 };
 
 export const getStaticProps: GetStaticProps = async (ctx) => {
-  const { slug } = ctx.params;
+  const { slug }: any = ctx.params;
   const { data } = await api.get(`/product/${slug}`);
 
   const product = {

@@ -1,24 +1,48 @@
 import styled from 'styled-components';
 
-export const Box = styled.div`
+export const Box = styled.div.attrs((props) => ({
+  type: props.type,
+}))`
   width: 100%;
-  /* display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 1rem; */
+  .imageBox {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1rem;
+    min-width: 25rem !important;
+
+    .img {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      /* background: rgb(182, 255, 64);
+      background: linear-gradient(
+        128deg,
+        rgba(182, 255, 64, 1) 0%,
+        rgba(63, 255, 71, 1) 100%
+      ); */
+      border-radius: 1rem;
+      width: 100%;
+      height: 25rem;
+      img {
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
 
   .box {
-    background: rgb(182, 255, 64);
+    /* background: rgb(182, 255, 64);
     background: linear-gradient(
       128deg,
       rgba(182, 255, 64, 1) 0%,
       rgba(63, 255, 71, 1) 100%
-    );
+    ); */
     display: flex;
     align-items: center;
     justify-content: center;
-
+    height: 15rem;
     img {
       width: 100%;
       height: 100%;
@@ -43,11 +67,11 @@ export const Box = styled.div`
         rgba(63, 255, 71, 1) 100%
       );
       border-radius: 1rem;
-      width: 15rem;
+      width: 8rem;
       height: 8rem;
       img {
-        width: 100%;
-        height: 100%;
+        width: 8rem;
+        height: 8rem;
       }
     }
 
@@ -63,7 +87,8 @@ export const Box = styled.div`
 
   .navigation-wrapper {
     position: relative;
-    padding: 0 10%;
+
+    padding: ${(props) => (props.type === 'productimg' ? 'unset' : '0 10%')};
   }
 
   .dots {

@@ -2,9 +2,11 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
+import { AuthContext } from '../../contexts/AuthContext';
+import { api } from '../../service/api';
 import {
   Container,
   Logo,
@@ -35,8 +37,14 @@ interface IInputProps {
 const Register: NextPage = () => {
   const { handleSubmit, register } = useForm();
   const [showAddress, setShowAddress] = useState(false);
-  const onSubmit: SubmitHandler<IInputProps> = (data: any) => {
-    console.log(data);
+  const { signIn } = useContext(AuthContext);
+
+  const onSubmit: SubmitHandler<IInputProps> = async (data: any) => {
+    const createUser = await api.post('/users/create', data);
+
+    if (createUser.status === 201) {
+      signIn(createUser.data);
+    }
   };
 
   const handleAddress = () => {
@@ -91,19 +99,27 @@ const Register: NextPage = () => {
             isRequired={true}
           ></StyledInput>
 
-          <StyledInput
+          {/* <StyledInput
             type="text"
             label="Data de nascimento"
             register={register}
             name="birthdate"
             isRequired={true}
-          ></StyledInput>
+          ></StyledInput> */}
 
           <StyledInput
             type="password"
             label="Senha"
             register={register}
             name="password"
+            isRequired={true}
+          ></StyledInput>
+
+          <StyledInput
+            type="password"
+            label="Confirmar senha"
+            register={register}
+            name="password_confirmed"
             isRequired={true}
           ></StyledInput>
 

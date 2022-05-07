@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useForm, UseFormRegister } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { useForm, UseFormRegister, ValidationRule } from 'react-hook-form';
 
 import { InputContent } from './styles';
 
@@ -7,6 +7,8 @@ interface IProps {
   name: string;
   label?: string;
   isRequired?: boolean;
+  valueDefault?: string;
+  pattern?: ValidationRule<RegExp>;
 }
 
 type InputProps = JSX.IntrinsicElements['input'] &
@@ -20,6 +22,8 @@ export default function Input({
   isRequired = false,
   label,
   children,
+  valueDefault,
+  pattern,
   ...rest
 }: InputProps) {
   const {
@@ -27,20 +31,27 @@ export default function Input({
   } = useForm();
   const [labelStyle, setLabelStyle] = useState({});
 
+  const sty = {
+    background: '#FAFAFA',
+    fontSize: '0.875rem',
+    top: '-0.5rem',
+    left: '0.8rem',
+    zIndex: 2,
+  };
+
   function handleBlur(value: string) {
-    const sty = {
-      background: '#FAFAFA',
-      fontSize: '0.875rem',
-      top: '-0.5rem',
-      left: '0.8rem',
-      zIndex: 2,
-    };
     if (value) {
       setLabelStyle(sty);
     } else {
       setLabelStyle({});
     }
   }
+
+  useEffect(() => {
+    if (valueDefault) {
+      setLabelStyle(sty);
+    }
+  }, []);
 
   return (
     <InputContent>
@@ -50,7 +61,10 @@ export default function Input({
         </label>
       )}
       <input
-        {...register(name, { required: isRequired })}
+        {...register(name, {
+          required: isRequired,
+          pattern,
+        })}
         {...rest}
         onBlur={({ target }) => {
           handleBlur(target.value);

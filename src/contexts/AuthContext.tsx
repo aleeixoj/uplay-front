@@ -1,5 +1,5 @@
 import Router from 'next/router';
-import { setCookie, parseCookies } from 'nookies';
+import { setCookie, parseCookies, destroyCookie } from 'nookies';
 import { createContext, useEffect, useState } from 'react';
 
 import { api } from '../service/api';
@@ -78,7 +78,10 @@ type AuthContextType = {
   isAuthenticated: boolean;
   user: User | null;
   signIn: (data: SignInData) => Promise<void>;
-  fillUserData: () => Promise<void>;
+  fillUserData: (user?: User) => Promise<void>;
+  signOut: () => void;
+  handleUpdateAvatar: (avatarUrl: string) => void
+
 };
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -87,10 +90,24 @@ export default function AuthProvider({ children }) {
   const [user, setUser] = useState<User | null>(null);
   const isAuthenticated = !!user;
 
-  const fillUserData = async () => {
-    const { data } = await api.get('/users/profile');
-    setUser(data);
+  const fillUserData = async (user?: User) => {
+    if (!user) {
+      const { data } = await api.get('/users/profile');
+      setUser(data);
+    } else {
+      setUser(user)
+    }
   };
+
+  const handleUpdateAvatar = async (avatarUrl: string) => {
+    const newUser = {
+      ...user,
+      avatar_url: avatarUrl
+    }
+
+    setUser(newUser as User);
+  }
+
 
   useEffect(() => {
     const { 'uplay.token': token } = parseCookies();
@@ -112,6 +129,15 @@ export default function AuthProvider({ children }) {
     Router.push('/');
   }
 
+  async function signOut() {
+    const { 'uplay.token': token } = parseCookies();
+    console.log('token', token);
+    if (token) {
+      destroyCookie(undefined, 'uplay.token');
+      Router.reload();
+    }
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -119,6 +145,8 @@ export default function AuthProvider({ children }) {
         signIn,
         user,
         fillUserData,
+        signOut,
+        handleUpdateAvatar
       }}
     >
       {children}

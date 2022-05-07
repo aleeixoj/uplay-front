@@ -19,9 +19,24 @@ const Home: NextPage = () => {
     getProducts();
   }, []);
 
+  const imgs = [
+    {
+      id: '1',
+      src: '/',
+      redirectTo: '/',
+      desc: 'string',
+    },
+    {
+      id: '2',
+      src: '/',
+      redirectTo: '/',
+      desc: 'string',
+    },
+  ];
+
   return (
     <Container>
-      {/* <Carousel banners={imgs} type="banner" /> */}
+      <Carousel banners={imgs} type="banner" />
 
       <Flex>
         <Payments>

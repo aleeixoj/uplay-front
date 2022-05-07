@@ -12,6 +12,7 @@ import {
 
 import { GetStringPrice } from '../../common/getStringPrice';
 import { useViewport } from '../../hooks/useViewPort';
+import { User } from '../../pages/product/[slug]';
 import { Box } from './styles';
 
 interface IProductImages {
@@ -20,6 +21,16 @@ interface IProductImages {
   image_name: string;
   image_url: string;
 }
+
+type Comment = {
+  id: string;
+  userId: string;
+  created_at: string;
+  updated_at: string;
+  productId: string;
+  comment: string;
+  user: User;
+};
 
 interface IProduct {
   id: string;
@@ -73,7 +84,7 @@ function Arrow(props: {
 function Carousel({ banners, productImages, products, type }: ICarouselProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [loaded, setLoaded] = useState(false);
-  const { width: screen } = useViewport()
+  const { width: screen } = useViewport();
   const miniC = type === 'scroll' ? {
     perView: screen >= 1024 ? 6 : screen >= 768 ? 5 : screen >= 425 ? 4 : 2,
     spacing: 15,
@@ -88,11 +99,10 @@ function Carousel({ banners, productImages, products, type }: ICarouselProps) {
       created() {
         setLoaded(true);
       },
-      slides: miniC
+      slides: miniC,
     },
     [
       (slider) => {
-
         let timeout: ReturnType<typeof setTimeout>;
         let mouseOver = false;
         function clearNextTimeout() {
@@ -102,7 +112,9 @@ function Carousel({ banners, productImages, products, type }: ICarouselProps) {
           clearTimeout(timeout);
           if (mouseOver) return;
           timeout = setTimeout(() => {
-            slider.next();
+            if (type !== 'productimg') {
+              slider.next();
+            }
           }, 2000);
         }
         slider.on('created', () => {
@@ -120,90 +132,98 @@ function Carousel({ banners, productImages, products, type }: ICarouselProps) {
         slider.on('animationEnded', nextTimeout);
         slider.on('updated', nextTimeout);
       },
-    ]
+    ],
   );
 
   return (
-    <Box>
+    <Box type={type}>
 
       <div className="navigation-wrapper">
         <div ref={sliderRef} className="keen-slider">
 
           {type === 'banner'
-            ? banners?.map((banner) => {
-              return (
-                <div key={banner.id} className="keen-slider__slide box">
+            ? banners?.map((banner) => (
+              <div key={banner.id} className="keen-slider__slide box">
 
-                  <Link href={banner.redirectTo}>
+                <Link href={banner.redirectTo}>
+                  <a>
+                    <img src={banner.src} alt={banner.desc} />
+                  </a>
+                </Link>
+              </div>
+            ))
+            : type === 'scroll'
+              ? products?.map((product) => (
+                <div key={product.id} className="keen-slider__slide miniBox">
+
+                  <Link href={`/product/${product.id}`}>
                     <a>
-                      <img src={banner.src} alt={banner.desc} />
+                      <div className="img">
+                        <Image
+                          width={500} height={500}
+                          objectFit={'cover'}
+                          quality="100"
+                          src={`${product?.product_image?.[0]?.image_url || '/'}`}
+                          alt={`${product?.product_image?.[0]?.image_name}`} />
+                      </div>
+                      <div className="texts">
+                        <span>{product.name}</span>
+                        <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
+                      </div>
                     </a>
                   </Link>
                 </div>
-              );
-            })
-            : type === 'scroll'
-              ?
-              products?.map((product) => {
-                return (
-                  <div key={product.id} className="keen-slider__slide miniBox">
-
-                    <Link href={`/product/${product.id}`}>
-                      <a>
-                        <div className="img">
-                          <Image width="100%" height="100%"
-                            src={`${product.product_image?.[0]?.image_url || '/'}`} alt={product?.product_image[0]?.image_name} />
-                        </div>
-                        <div className="texts">
-                          <span>{product.name}</span>
-                          <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
-                        </div>
-                      </a>
-                    </Link>
+              ))
+              : type === 'productimg' ? (
+                productImages?.map((image) => (
+                  <div key={image.id} className="keen-slider__slide imageBox">
+                    <div className="img">
+                      <Image width={1200} height={1200}
+                        objectFit="cover"
+                        quality={100}
+                        src={`${image.image_url || '/'}`}
+                        alt={`${image.image_name}`} />
+                    </div>
                   </div>
-                );
-              })
-              : type === 'product' ? '' : ''
+                ))
+              ) : ''
           }
         </div>
         {loaded && instanceRef.current && (
           <>
             <Arrow
               left
-              onClick={(e: any) =>
-                e.stopPropagation() || instanceRef.current?.prev()
+              onClick={(e: any) => e.stopPropagation() || instanceRef.current?.prev()
               }
               disabled={currentSlide === 0}
             />
 
             <Arrow
-              onClick={(e: any) =>
-                e.stopPropagation() || instanceRef.current?.next()
+              onClick={(e: any) => e.stopPropagation() || instanceRef.current?.next()
               }
               disabled={
-                currentSlide ===
+                currentSlide
                 // eslint-disable-next-line no-unsafe-optional-chaining
-                instanceRef?.current?.track?.details?.slides?.length - 1
+                === instanceRef?.current?.track?.details?.slides?.length - 1
               }
             />
           </>
         )}
       </div>
       {loaded && instanceRef.current && (
-        <div className="dots">
+        type !== 'productimg'
+        && <div className="dots">
           {[
             ...Array(instanceRef?.current?.track?.details?.slides?.length).keys(),
-          ].map((idx) => {
-            return (
-              <button
-                key={idx}
-                onClick={() => {
-                  instanceRef.current?.moveToIdx(idx);
-                }}
-                className={`dot${currentSlide === idx ? ' active' : ''}`}
-              ></button>
-            );
-          })}
+          ].map((idx) => (
+            <button
+              key={idx}
+              onClick={() => {
+                instanceRef.current?.moveToIdx(idx);
+              }}
+              className={`dot${currentSlide === idx ? ' active' : ''}`}
+            ></button>
+          ))}
         </div>
       )}
     </Box>

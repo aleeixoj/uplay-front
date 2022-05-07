@@ -114,7 +114,7 @@ function Header() {
                   </div>
                   <div className="text">
                     <span>Enviar para</span>
-                    <span>{user?.address[0].street}</span>
+                    <span>{user?.address?.[0].street}</span>
                   </div>
                 </>
               ) : (
@@ -160,14 +160,23 @@ function Header() {
                         <Avatar>
                           <AvatarImage
                             src={user?.avatar_url}
-                            alt="Aleixo Junior"
+                            alt={user?.name}
                           />
-                          <AvatarFallback delayMs={600}>AJ</AvatarFallback>
+                          <AvatarFallback delayMs={600}>
+                            {user?.name
+                              .match(/(\b\S)?/g)
+                              .join('')
+                              .match(/(^\S|\S$)?/g)
+                              .join('')
+                              .toUpperCase()}
+                          </AvatarFallback>
                         </Avatar>
                       </div>
 
                       <div className="userName">
-                        <span>{user?.name.split(' ')[0]}</span>
+                        <StyledLink href="/profile">
+                          <span>{user?.name.split(' ')[0]}</span>
+                        </StyledLink>
                       </div>
                     </StyledItem>
 

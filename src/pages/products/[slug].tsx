@@ -43,25 +43,24 @@ export default function Products({ products }: ProductsProps) {
       </Top>
       <Left>Aleixo</Left>
       <Right>
-        {products.map((product) => {
-          return (
-            <Link href={`/product/${product.id}`} key={product.id}>
-              <Box>
-                <div className="img">
-                  <Image
-                    src={`${product?.product_image[0]?.image_url}`}
-                    width="100%"
-                    height="100%"
-                  />
-                </div>
-                <div className="texts">
-                  <span>{product.name}</span>
-                  <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
-                </div>
-              </Box>
-            </Link>
-          );
-        })}
+        {products.map((product) => (
+          <Link href={`/product/${product.id}`} key={product.id}>
+            <Box>
+              <div className="img">
+                <Image
+                  src={`${product?.product_image?.[0]?.image_url || '/'}`}
+                  width="100%"
+                  height="100%"
+                  objectFit="cover"
+                />
+              </div>
+              <div className="texts">
+                <span>{product.name}</span>
+                <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
+              </div>
+            </Box>
+          </Link>
+        ))}
       </Right>
     </Container>
   );
@@ -75,13 +74,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
     },
   });
 
-  const paths = data.map((category: any) => {
-    return {
-      params: {
-        slug: category.id,
-      },
-    };
-  });
+  const paths = data.map((category: any) => ({
+    params: {
+      slug: category.id,
+    },
+  }));
   return {
     paths,
     fallback: 'blocking',
@@ -92,37 +89,21 @@ export const getStaticProps: GetStaticProps = async (ctx) => {
   const { slug } = ctx.params;
   const { data } = await api.get(`/product/by_category/${slug}`);
 
-  const products = data.map((product: Product) => {
-    const productsImages =
-      product.product_image?.length > 0
-        ? product.product_image?.map((_product: ProductImage) => {
+  const products = data.map((product: Product) => ({
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    description: product.description,
+    warranty: product.warranty,
+    color: product.color,
+    reference: product.reference,
+    code: product.code,
+    stock: product.stock,
+    brand: product.brand,
+    categoryId: product.categoryId,
+    product_image: product.product_image,
 
-          return {
-            id: _product.id,
-            image_name: _product.image_name,
-            image_url: _product.image_url,
-            productId: _product.productId,
-          };
-        })
-        : [{ image_url: '/' }];
-    return {
-      id: product.id,
-      name: product.name,
-      price: product.price,
-      description: product.description,
-      warranty: product.warranty,
-      color: product.color,
-      reference: product.reference,
-      code: product.code,
-      stock: product.stock,
-      brand: product.brand,
-      categoryId: product.categoryId,
-      product_image:
-        product.product_image?.length > 0
-          ? product.product_image
-          : [{ image_url: '/' }],
-    };
-  });
+  }));
   return {
     props: { products },
     revalidate: 60 * 60 * 24,

@@ -50,44 +50,40 @@ export default function Checkout() {
       <h3>Como você prefere pagar?</h3>
       <h4>Com Mercado pago</h4>
       <Box>
-        {cards.map((card) => {
-          return (
-            <Item key={card.value} onClick={() => console.log(card.bandeira)}>
-              <div className="icon">
-                <FiCreditCard />
+        {cards.map((card) => (
+          <Item key={card.value} onClick={() => console.log(card.bandeira)}>
+            <div className="icon">
+              <FiCreditCard />
+            </div>
+            <div className="card">
+              <div className="info">
+                <span>{card.bandeira}</span>
+                <span>{card.final}</span>
               </div>
-              <div className="card">
-                <div className="info">
-                  <span>{card.bandeira}</span>
-                  <span>{card.final}</span>
-                </div>
-                <div className="juros">
-                  <span>{card.description}</span>
-                </div>
+              <div className="juros">
+                <span>{card.description}</span>
               </div>
-            </Item>
-          );
-        })}
+            </div>
+          </Item>
+        ))}
       </Box>
       <h4>Com outros meios de pagamento</h4>
       <Box>
-        {cards2.map((card) => {
-          return (
-            <Item key={card.value} onClick={() => console.log(card.value)}>
-              <div className="icon">
-                <FiBarChart2 />
+        {cards2.map((card) => (
+          <Item key={card.value} onClick={() => console.log(card.value)}>
+            <div className="icon">
+              <FiBarChart2 />
+            </div>
+            <div className="card">
+              <div className="info">
+                <span>{card.tipo}</span>
               </div>
-              <div className="card">
-                <div className="info">
-                  <span>{card.tipo}</span>
-                </div>
-                <div className="juros">
-                  <span>{card.description}</span>
-                </div>
+              <div className="juros">
+                <span>{card.description}</span>
               </div>
-            </Item>
-          );
-        })}
+            </div>
+          </Item>
+        ))}
       </Box>
     </Container>
   );
