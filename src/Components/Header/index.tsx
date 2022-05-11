@@ -202,7 +202,7 @@ function Header() {
                   </StyledList>
                   {user?.profile.name === 'admin_user' && (
                     <StyledItem>
-                      <StyledLink href="/dashboard">Dashboard</StyledLink>
+                      <StyledLink href="/painel">Dashboard</StyledLink>
                     </StyledItem>
                   )}
                   <NavigationMenuPrimitive.Viewport />

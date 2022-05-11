@@ -54,6 +54,8 @@ export const Box = styled.div.attrs((props) => ({
     align-items: center;
     justify-content: center;
     border-radius: 1rem;
+    overflow: none;
+    text-overflow: ellipsis;
 
     .img {
       display: flex;

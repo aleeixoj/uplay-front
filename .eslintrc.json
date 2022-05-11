@@ -23,7 +23,8 @@
     "react",
     "eslint-plugin-import-helpers",
     "@typescript-eslint",
-    "eslint-plugin-styled-components-a11y"
+    "eslint-plugin-styled-components-a11y",
+    "prettier"
   ],
   "rules": {
     "prettier/prettier": [

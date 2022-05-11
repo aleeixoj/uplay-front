@@ -17,6 +17,7 @@ type Address = {
   number: string;
   complement: string;
   name?: string;
+  district: string;
 };
 type Profile = {
   id: string;
@@ -55,7 +56,6 @@ type Cart = {
   products: Product[];
   productsQtn: ProductQtn[];
 };
-
 type User = {
   id: string;
   name: string;

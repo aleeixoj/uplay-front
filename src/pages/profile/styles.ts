@@ -2,6 +2,7 @@ import * as AvatarPrimitive from '@radix-ui/react-avatar';
 import Modal from 'react-modal';
 import styled from 'styled-components';
 
+import { Button } from '../../Components/Button';
 import Input from '../../Components/CustomInput';
 import ProfileCard from '../../Components/ProfileCard';
 
@@ -12,6 +13,14 @@ export const Container = styled.div`
   flex-direction: column;
   padding: 1rem;
   gap: 1rem;
+  .avatar {
+    position: relative;
+    .changeAvatar {
+      position: absolute;
+      top: 20%;
+      left: 20%;
+    }
+  }
 `;
 
 export const StyledProfileCard = styled(ProfileCard)`
@@ -128,3 +137,7 @@ export const UserData = styled.div`
   }
 `;
 export const StyledInput = styled(Input)``;
+
+export const StyledButton = styled(Button)`
+  background: ${(props) => props.theme.colors.orange[800]};
+`;

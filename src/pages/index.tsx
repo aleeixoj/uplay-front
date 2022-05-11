@@ -73,7 +73,7 @@ const Home: NextPage = () => {
         </Link>
       </Flex>
 
-      <Carousel products={products} type="scroll" />
+      {products.length > 0 && <Carousel products={products} type="scroll" />}
     </Container>
   );
 };

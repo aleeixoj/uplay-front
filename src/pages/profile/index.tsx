@@ -23,7 +23,33 @@ import {
   CloseButton,
   UserData,
   StyledInput,
+  StyledButton,
 } from './styles';
+
+const customStyle = {
+  content: {
+    top: '50%',
+    left: '50%',
+    right: 'auto',
+    bottom: 'auto',
+    marginRight: '-50%',
+    transform: 'translate(-50%, -50%)',
+    width: 'min(90%, 25rem)',
+    height: '25rem',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: '1rem',
+    border: '1px solid #FAFAFA',
+    background: '#FAFAFA',
+    boxShadow: '0px 0px 10px 1px rgba(0,0,0,0.5)',
+    position: 'relative',
+  },
+  overlay: {
+    zIndex: '999',
+    background: 'rgba(0,0,0,0.2)',
+  },
+};
 
 export default function Profile() {
   const { user, signOut, handleUpdateAvatar } = useContext(AuthContext);
@@ -31,35 +57,18 @@ export default function Profile() {
   const { handleSubmit, register } = useForm();
 
   const [userDataModal, setUserDataModal] = useState(false);
-
-  const customStyle = {
-    content: {
-      top: '50%',
-      left: '50%',
-      right: 'auto',
-      bottom: 'auto',
-      marginRight: '-50%',
-      transform: 'translate(-50%, -50%)',
-      width: 'min(90%, 25rem)',
-      height: '25rem',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      borderRadius: '1rem',
-      border: '1px solid #FAFAFA',
-      background: '#FAFAFA',
-      boxShadow: '0px 0px 10px 1px rgba(0,0,0,0.5)',
-      position: 'relative',
-    },
-    overlay: {
-      zIndex: '999',
-      background: 'rgba(0,0,0,0.2)',
-    },
-  };
+  const [userAddressModal, setUserAddressModal] = useState(false);
+  const [userSecurityModal, setUserSecurityModal] = useState(false);
 
   async function handleLogout() {
     await signOut();
   }
+
+  const handleEditUserData = async (data: any) => {
+    if (data.city) {
+      await api.put('/users/update', { address: [data] });
+    }
+  };
 
   const handleSubmitAvatar = async (file: any) => {
     if (!file) return;
@@ -67,19 +76,15 @@ export default function Profile() {
     formData.append('avatar', file);
 
     const { data } = await api.patch('users/avatar', formData);
-    if (data['avatar_url']) {
+    if (data.avatar_url) {
       handleUpdateAvatar(data.avatar_url);
     }
-
-  }
+  };
 
   return (
     <Container>
       <div className="avatar">
-        <Avatar
-          onMouseEnter={() => setIcon('block')}
-          onMouseLeave={() => setIcon('none')}
-        >
+        <Avatar>
           {/* <div
             className="icon"
             style={{
@@ -100,10 +105,15 @@ export default function Profile() {
               .toUpperCase()}
           </AvatarFallback>
         </Avatar>
+
+        <div className="changeAvatar">
+          <ArchInput
+            name="input"
+            register={register}
+            onChange={handleSubmitAvatar}
+          />
+        </div>
       </div>
-
-      <ArchInput name="input" register={register} onChange={handleSubmitAvatar} />
-
 
       <h4>{user?.name}</h4>
       <Box>
@@ -113,10 +123,16 @@ export default function Profile() {
         >
           <IoPerson />
         </StyledProfileCard>
-        <StyledProfileCard label="Segurança">
+        <StyledProfileCard
+          label="Segurança"
+          onClick={() => setUserSecurityModal(true)}
+        >
           <FiLock />
         </StyledProfileCard>
-        <StyledProfileCard label="Meus endereços">
+        <StyledProfileCard
+          label="Meus endereços"
+          onClick={() => setUserAddressModal(true)}
+        >
           <FiMapPin />
         </StyledProfileCard>
         <StyledProfileCard label="Compras">
@@ -127,13 +143,75 @@ export default function Profile() {
         </StyledProfileCard>
       </Box>
 
+      <ReactModal style={customStyle} isOpen={userAddressModal}>
+        <CloseButton onClick={() => setUserAddressModal(false)}>
+          <AiOutlineCloseCircle />
+        </CloseButton>
+        <UserData>
+          <div className="infos">
+            <form
+              onSubmit={handleSubmit((data: any) => {
+                handleEditUserData(data);
+              })}
+            >
+              <StyledInput
+                label="Rua"
+                type="text"
+                register={register}
+                name="street"
+                defaultValue={user?.address[0].street}
+                valueDefault={user?.address[0].street}
+              ></StyledInput>
+              <StyledInput
+                label="Cidade"
+                type="text"
+                register={register}
+                name="city"
+                defaultValue={user?.address[0].city}
+                valueDefault={user?.address[0].city}
+              ></StyledInput>
+              <StyledInput
+                label="Número"
+                type="text"
+                register={register}
+                name="number"
+                defaultValue={user?.address[0].number}
+                valueDefault={user?.address[0].number}
+              ></StyledInput>
+              <StyledInput
+                label="Bairro"
+                type="text"
+                register={register}
+                name="district"
+                defaultValue={user?.address[0].district}
+                valueDefault={user?.address[0].district}
+              ></StyledInput>
+              <StyledInput
+                label="Estado"
+                type="text"
+                register={register}
+                name="state"
+                defaultValue={user?.address[0].state}
+                valueDefault={user?.address[0].state}
+              ></StyledInput>
+
+              <StyledButton type="submit">Atualizar dados</StyledButton>
+            </form>
+          </div>
+        </UserData>
+      </ReactModal>
+
       <ReactModal style={customStyle} isOpen={userDataModal}>
         <CloseButton onClick={() => setUserDataModal(false)}>
           <AiOutlineCloseCircle />
         </CloseButton>
         <UserData>
           <div className="infos">
-            <form>
+            <form
+              onSubmit={handleSubmit((data: any) => {
+                handleEditUserData(data);
+              })}
+            >
               <StyledInput
                 label="Nome"
                 type="text"
@@ -154,16 +232,22 @@ export default function Profile() {
                 label="Telefone"
                 type="text"
                 register={register}
-                pattern={
-                  /(?:^([0]?[1-9]{2})|^[0]?[1-9]{2}[.-s]?)[9]?[1-9]d{3}[.-s]?d{4}$/
-                }
                 name="phone"
                 defaultValue={user?.phone}
                 valueDefault={user?.phone}
               ></StyledInput>
+
+              <StyledButton type="submit">Atualizar dados</StyledButton>
             </form>
           </div>
         </UserData>
+      </ReactModal>
+
+      <ReactModal style={customStyle} isOpen={userSecurityModal}>
+        <CloseButton onClick={() => setUserSecurityModal(false)}>
+          <AiOutlineCloseCircle />
+        </CloseButton>
+        <UserData>Ainda em desenvolvimento</UserData>
       </ReactModal>
     </Container>
   );
