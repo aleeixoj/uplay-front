@@ -9,6 +9,7 @@ const useMercadopago = () => {
     window.onload = () => {
       const mercadopago = new MercadoPago(
         'TEST-cb1365c9-25d3-4f1d-ae59-6340faca0e25',
+        
       );
       setMercadoPago(mercadopago);
     };

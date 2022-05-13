@@ -149,8 +149,7 @@ export default function Cart() {
         </div>
 
         <StyledButton type="button" onClick={() => Router.push('/checkout')}>
-          {' '}
-          Finalizar compra{' '}
+          Finalizar compra
         </StyledButton>
       </ProductCheckout>
     </Container>

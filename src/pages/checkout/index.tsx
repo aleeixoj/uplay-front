@@ -1,10 +1,14 @@
 import _ from 'lodash';
-import { useEffect, useState } from 'react';
+import { GetServerSideProps } from 'next';
+import Router from 'next/router';
+import { parseCookies } from 'nookies';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import ReactModal from 'react-modal';
 
 import { Button } from '../../Components/Button';
 import { useMercadopago } from '../../hooks/useMercadopago';
+import { api } from '../../service/api';
 import { Box, CloseButton, Container, StyledForm } from './styles';
 
 const customStyle = {
@@ -36,113 +40,117 @@ export default function Checkout({ paymentUser }: any) {
   const [openModalAddCard, setOpenModalAddCard] = useState(false);
   const { mercadoPago } = useMercadopago();
 
-  const cardForm = openModalAddCard && !_.isNil(mercadoPago)
-    ? setTimeout(() => {
-      mercadoPago.cardForm({
-        amount: '100.5',
-        autoMount: true,
-        form: {
-          id: 'form-checkout',
-          cardholderName: {
-            id: 'form-checkout__cardholderName',
-            placeholder: 'Titular do cartão',
-          },
-          cardNumber: {
-            id: 'form-checkout__cardNumber',
-            placeholder: 'Número do cartão',
-          },
-          expirationDate: {
-            id: 'form-checkout__expirationDate',
-            placeholder: 'Data de vencimento (MM/YYYY)',
-          },
-          securityCode: {
-            id: 'form-checkout__securityCode',
-            placeholder: 'Código de segurança',
-          },
-          installments: {
-            id: 'form-checkout__installments',
-            placeholder: 'Parcelas',
-          },
-          identificationType: {
-            id: 'form-checkout__identificationType',
-            placeholder: 'Tipo de documento',
-          },
-          identificationNumber: {
-            id: 'form-checkout__identificationNumber',
-            placeholder: 'Número do documento',
-          },
-          issuer: {
-            id: 'form-checkout__issuer',
-            placeholder: 'Banco emissor',
-          },
+  const handleOpenModal = async () => {
+    setOpenModalAddCard(!openModalAddCard);
+  };
+
+  function loadCardForm() {
+    const cardForm = mercadoPago?.cardForm({
+      amount: '105.9',
+      autoMount: true,
+      form: {
+        id: 'form-checkout',
+        cardholderName: {
+          id: 'form-checkout__cardholderName',
+          placeholder: 'Holder name',
         },
-        callbacks: {
-          onFormMounted: (error) => {
-            if (error) {
-              return console.warn('Form Mounted handling error: ', error);
-            }
-            console.log('Form mounted');
-          },
-          // onSubmit: (event) => {
-          //   event.preventDefault();
-
-          //   const {
-          //     paymentMethodId: payment_method_id,
-          //     issuerId: issuer_id,
-          //     cardholderEmail: email,
-          //     amount,
-          //     token,
-          //     installments,
-          //     identificationNumber,
-          //     identificationType,
-          //   } = cardForm.getCardFormData();
-
-          //   fetch('/process_payment', {
-          //     method: 'POST',
-          //     headers: {
-          //       'Content-Type': 'application/json',
-          //     },
-          //     body: JSON.stringify({
-          //       token,
-          //       issuer_id,
-          //       payment_method_id,
-          //       transaction_amount: Number(amount),
-          //       installments: Number(installments),
-          //       description: 'Descrição do produto',
-          //       payer: {
-          //         email,
-          //         identification: {
-          //           type: identificationType,
-          //           number: identificationNumber,
-          //         },
-          //       },
-          //     }),
-          //   });
-          // },
-          // onFetching: (resource) => {
-          //   console.log('Fetching resource: ', resource);
-
-          //   // Animate progress bar
-          //   const progressBar = document.querySelector('.progress-bar');
-          //   progressBar.removeAttribute('value');
-
-          //   return () => {
-          //     progressBar.setAttribute('value', '0');
-          //   };
-          // },
+        // cardholderEmail: {
+        //   id: 'form-checkout__cardholderEmail',
+        //   placeholder: 'E-mail',
+        // },
+        cardNumber: {
+          id: 'form-checkout__cardNumber',
+          placeholder: 'Card number',
         },
-      });
-    }, 500)
-    : '';
+        cardExpirationMonth: {
+          id: 'form-checkout__cardExpirationMonth',
+          placeholder: 'MM',
+        },
+        cardExpirationYear: {
+          id: 'form-checkout__cardExpirationYear',
+          placeholder: 'YY',
+        },
+        securityCode: {
+          id: 'form-checkout__securityCode',
+          placeholder: 'Security code',
+        },
+        installments: {
+          id: 'form-checkout__installments',
+          placeholder: 'Installments',
+        },
+        identificationType: {
+          id: 'form-checkout__identificationType',
+        },
+        identificationNumber: {
+          id: 'form-checkout__identificationNumber',
+          placeholder: 'Identification number',
+        },
+        issuer: {
+          id: 'form-checkout__issuer',
+          placeholder: 'Issuer',
+        },
+      },
+      callbacks: {
+        onFormMounted: (error) => {
+          if (error) {
+            return console.warn('Form Mounted handling error: ', error);
+          }
+          console.log('Form mounted');
+        },
+        onSubmit: (event: Event) => {
+          event.preventDefault();
+          const {
+            paymentMethodId: payment_method_id,
+            issuerId: issuer_id,
+            cardholderEmail: email,
+            amount,
+            token,
+            installments,
+            identificationNumber,
+            identificationType,
+          } = cardForm.getCardFormData();
+
+          api
+            .post('/payments/process_payment', {
+              token,
+              issuer_id,
+              payment_method_id,
+              transaction_amount: Number(amount),
+              installments: Number(installments),
+              description: 'Descrição do produto',
+              payer: {
+                email,
+                identification: {
+                  type: identificationType,
+                  number: identificationNumber,
+                },
+              },
+            })
+            .then(({ data }) => {
+              if (data.createPayment.response.status === 'approved') {
+                handleOpenModal();
+                Router.push(`order/${data.order.id}`);
+              }
+            });
+        },
+      },
+    });
+  }
+
+  useMemo(() => {
+    if (openModalAddCard === true) {
+      setTimeout(() => {
+        loadCardForm();
+      }, 500);
+    }
+  }, [openModalAddCard]);
 
   return (
     <Container>
       <h3>Como você prefere pagar?</h3>
       <h4>Com cartão</h4>
       <Box>
-        <span onClick={() => setOpenModalAddCard(true)}>
-          + Adicionar cartão
-        </span>
+        <span onClick={() => handleOpenModal()}>+ Adicionar cartão</span>
       </Box>
       <h4>Com outros meios de pagamento</h4>
       <Box></Box>
@@ -151,13 +159,20 @@ export default function Checkout({ paymentUser }: any) {
         <CloseButton onClick={() => setOpenModalAddCard(false)}>
           <AiOutlineCloseCircle />
         </CloseButton>
+
         <StyledForm id="form-checkout">
           <input type="text" name="cardNumber" id="form-checkout__cardNumber" />
           <input
+            id="form-checkout__cardExpirationMonth"
+            name="cardExpirationMonth"
+            type="text"
+          />
+          <input
             type="text"
             name="expirationDate"
-            id="form-checkout__expirationDate"
+            id="form-checkout__cardExpirationYear"
           />
+
           <input
             type="text"
             name="cardholderName"
@@ -187,6 +202,21 @@ export default function Checkout({ paymentUser }: any) {
     </Container>
   );
 }
+export const getServerSideProps: GetServerSideProps = async (ctx) => {
+  const { 'uplay.token': token } = parseCookies(ctx);
+
+  if (!token) {
+    return {
+      redirect: {
+        destination: '/login',
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {},
+  };
+};
 
 // export const getStaticProps: GetStaticProps = async () => {
 //   const { data } = await api.get('/payments/user');
