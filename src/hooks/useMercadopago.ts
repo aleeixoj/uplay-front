@@ -24,10 +24,6 @@ const useMercadopago = (publicKey: string) => {
     };
   }, []);
 
-  useEffect(() => {
-    console.log('chegou aqui no useEffect', mercadopago);
-  }, [mercadopago]);
-
   return { mercadopago };
 };
 

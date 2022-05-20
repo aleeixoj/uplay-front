@@ -2,12 +2,13 @@ import _ from 'lodash';
 import { GetServerSideProps } from 'next';
 import Router from 'next/router';
 import { parseCookies } from 'nookies';
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 
 import { formatPrice } from '../../common/formatPrice';
 import { Carousel } from '../../Components/Carousel';
 import CartCard from '../../Components/cartCard';
 import { AuthContext } from '../../contexts/AuthContext';
+import { api } from '../../service/api';
 import { Container, ProductCheckout, StyledButton, Products } from './styles';
 
 type ProductQtn = {
@@ -15,6 +16,13 @@ type ProductQtn = {
   qtn: number;
   totalPrice: number;
 };
+type IProductImages = {
+  id: string;
+  productId: string;
+  image_name: string;
+  image_url: string;
+};
+
 type Product = {
   id: string;
   name: string;
@@ -27,59 +35,24 @@ type Product = {
   stock: string;
   brand: string;
   categoryId: string;
+  product_image: IProductImages[];
+  comment: IComment[];
 };
 
 export default function Cart() {
-  const imgs = [
-    {
-      imgSrc: '/landing.svg',
-      id: 1,
-      imgAlt: 'Landing',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/vercel.svg',
-      id: 2,
-      imgAlt: 'Vercel',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 3,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 4,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 5,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-    {
-      imgSrc: '/app.svg',
-      id: 6,
-      imgAlt: 'Logo',
-      redirect: '/',
-      name: 'Landing',
-      price: 'R$ 99.90',
-    },
-  ];
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    const getProducts = async () => {
+      const { data } = await api.get('product/all', {
+        params: {
+          limit: 6,
+        },
+      });
+      setProducts(data);
+    };
+    getProducts();
+  }, []);
 
   const { user } = useContext(AuthContext);
 
@@ -88,7 +61,7 @@ export default function Cart() {
       Number(
         productsQtn?.reduce(
           (sumTotal, product) => sumTotal + product.totalPrice,
-          0
+          0,
         ),
       ),
     );
@@ -99,10 +72,10 @@ export default function Cart() {
   const handleProductQtn = (product: Product) => {
     const filtered = _.filter(
       user?.cart.productsQtn,
-      (qtn) => qtn.productId === product.id
+      (qtn) => qtn.productId === product.id,
     );
 
-    return filtered[0].qtn;
+    return filtered[0]?.qtn;
   };
 
   return (
@@ -128,7 +101,9 @@ export default function Cart() {
         )}
         <div className="moreProducts">
           <h4>Talvez você também goste</h4>
-          <Carousel products={imgs} type="scroll" />
+          {products.length > 0 && (
+            <Carousel products={products} type="scroll" />
+          )}
         </div>
       </Products>
 

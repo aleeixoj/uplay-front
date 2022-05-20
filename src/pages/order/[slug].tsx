@@ -3,7 +3,7 @@ import { GetStaticPaths, GetStaticProps } from 'next';
 import { useContext, useEffect, useState } from 'react';
 import { FiCheck, FiCreditCard, FiX } from 'react-icons/fi';
 
-import { GetStringPrice } from '../../common/getStringPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { Carousel } from '../../Components/Carousel';
 import { AuthContext } from '../../contexts/AuthContext';
 import { api } from '../../service/api';
@@ -72,13 +72,10 @@ export default function Order({ order }: OrderProps) {
                 <div className="desc">
                   <span className="value">
                     Você pagou {_order.installments}x de R${' '}
-                    {GetStringPrice.getStringPrice(
-                      Number(_order.installmentsValue),
-                    )}
+                    {getStringPrice(Number(_order.installmentsValue))}
                   </span>
                   <span className="total">
-                    Total R${' '}
-                    {GetStringPrice.getStringPrice(Number(_order.totalPrice))}
+                    Total R$ {getStringPrice(Number(_order.totalPrice))}
                   </span>
                 </div>
               </div>

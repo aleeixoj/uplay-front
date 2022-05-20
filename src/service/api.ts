@@ -2,7 +2,8 @@
 import axios, { AxiosError } from 'axios';
 import { parseCookies, setCookie } from 'nookies';
 
-const { 'uplay.token': token, 'uplay.refresh_token': refreshToken } = parseCookies();
+const { 'uplay.token': token, 'uplay.refresh_token': refreshToken } =
+  parseCookies();
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_URL_API,
   headers: {
@@ -29,13 +30,11 @@ api.interceptors.response.use(
               maxAge: 60 * 60 * 24 * 5, // 5 dias
             });
 
-            api.defaults.headers.common[
-              'Authorization'
-            ] = `Bearer ${data.token}`;
+            api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
           });
       }
     }
-  }
+  },
 );
 
 export { api };

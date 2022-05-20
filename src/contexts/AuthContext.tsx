@@ -118,7 +118,7 @@ export default function AuthProvider({ children }) {
     const { data } = await api.post('/sessions', { email, password });
 
     setCookie(undefined, 'uplay.token', data.token, {
-      maxAge: 60 * 5, // 5 minutes
+      maxAge: 60 * 15, // 15 minutes
     });
     setCookie(undefined, 'uplay.refresh_token', data.refresh_token, {
       maxAge: 60 * 60 * 24 * 15, // 5 dias

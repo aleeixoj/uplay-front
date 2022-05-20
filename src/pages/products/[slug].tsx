@@ -2,9 +2,8 @@
 import { GetStaticPaths, GetStaticProps } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 
-import { GetStringPrice } from '../../common/getStringPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { api } from '../../service/api';
 import { Container, Box, Left, Right, Top } from './styles';
 
@@ -56,7 +55,7 @@ export default function Products({ products }: ProductsProps) {
               </div>
               <div className="texts">
                 <span>{product.name}</span>
-                <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
+                <span>R$ {getStringPrice(product.price)}</span>
               </div>
             </Box>
           </Link>

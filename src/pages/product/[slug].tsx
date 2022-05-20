@@ -8,7 +8,7 @@ import Router from 'next/router';
 import { useContext, useEffect, useState } from 'react';
 import { FiCreditCard, FiHeart, FiShare2, FiTruck } from 'react-icons/fi';
 
-import { GetStringPrice } from '../../common/getStringPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { Carousel } from '../../Components/Carousel';
 import { RoundedButton } from '../../Components/Header/styles';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -95,11 +95,31 @@ type Stock = {
   idx: number;
 };
 
+const customStyles = {
+  option: (provided: any) => ({
+    ...provided,
+    fontWeight: 400,
+    padding: 10,
+  }),
+  control: () => ({
+    border: 'none',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 'auto',
+  }),
+  singleValue: (provided: any, state: any) => {
+    const opacity = state.isDisabled ? 0.5 : 1;
+    const transition = 'opacity 300ms';
+
+    return { ...provided, opacity, transition };
+  },
+};
 export default function Product({ product }: ProductsProps) {
   const [strPrice, setStrPrice] = useState('');
 
   useEffect(() => {
-    setStrPrice(GetStringPrice.getStringPrice(product.price));
+    setStrPrice(getStringPrice(product.price));
   }, []);
 
   const quota = (product.price / 10).toFixed(2).toString().replace('.', ',');
@@ -115,27 +135,6 @@ export default function Product({ product }: ProductsProps) {
     });
   }
   const [qnt, setQnt] = useState(newStock[0].value);
-
-  const customStyles = {
-    option: (provided: any) => ({
-      ...provided,
-      fontWeight: 400,
-      padding: 10,
-    }),
-    control: () => ({
-      border: 'none',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'center',
-      width: 'auto',
-    }),
-    singleValue: (provided: any, state: any) => {
-      const opacity = state.isDisabled ? 0.5 : 1;
-      const transition = 'opacity 300ms';
-
-      return { ...provided, opacity, transition };
-    },
-  };
 
   const [dataProducts, setDataProducts] = useState<Product[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
@@ -331,9 +330,8 @@ export default function Product({ product }: ProductsProps) {
                     <Box>
                       <div className="img">
                         <Image
-                          src={`${
-                            _product?.product_image[0]?.image_url || '/'
-                          }`}
+                          src={`${_product?.product_image[0]?.image_url || '/'
+                            }`}
                           width="100%"
                           height="100%"
                         />

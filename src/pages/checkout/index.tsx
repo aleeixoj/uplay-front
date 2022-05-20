@@ -84,7 +84,7 @@ function ModalForm({ handleCloseModal }: any) {
       ),
     );
 
-    return total.split('R$')[1].replace(',', '.');
+    return total.substring(3).replace(',', '.');
   };
 
   function loadCardForm() {
@@ -96,10 +96,6 @@ function ModalForm({ handleCloseModal }: any) {
         cardholderName: {
           id: 'form-checkout__cardholderName',
         },
-        // cardholderEmail: {
-        //   id: 'form-checkout__cardholderEmail',
-        //   placeholder: 'E-mail',
-        // },
         cardNumber: {
           id: 'form-checkout__cardNumber',
         },
@@ -169,7 +165,7 @@ function ModalForm({ handleCloseModal }: any) {
             })
             .then(({ data }) => {
               if (data.createPayment.response.status === 'approved') {
-                handleOpenModal();
+                handleCloseModal(true);
                 Router.push(`order/${data.order.id}`);
               }
             });
