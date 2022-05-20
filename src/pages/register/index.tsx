@@ -17,8 +17,8 @@ import {
 } from './styles';
 
 interface IInputProps {
-  name: string;
-  lastname: string;
+  firt_name: string;
+  last_name: string;
   email: string;
   password: string;
   phone: string;
@@ -71,7 +71,7 @@ const Register: NextPage = () => {
             type="text"
             label="Nome"
             register={register}
-            name="name"
+            name="first_name"
             isRequired={true}
           ></StyledInput>
 
@@ -79,7 +79,7 @@ const Register: NextPage = () => {
             type="text"
             label="Sobrenome"
             register={register}
-            name="lastname"
+            name="last_name"
             isRequired={true}
           ></StyledInput>
 

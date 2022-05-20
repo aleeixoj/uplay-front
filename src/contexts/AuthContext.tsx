@@ -80,8 +80,7 @@ type AuthContextType = {
   signIn: (data: SignInData) => Promise<void>;
   fillUserData: (user?: User) => Promise<void>;
   signOut: () => void;
-  handleUpdateAvatar: (avatarUrl: string) => void
-
+  handleUpdateAvatar: (avatarUrl: string) => void;
 };
 
 export const AuthContext = createContext({} as AuthContextType);
@@ -95,20 +94,18 @@ export default function AuthProvider({ children }) {
       const { data } = await api.get('/users/profile');
       setUser(data);
     } else {
-      setUser(user)
+      setUser(user);
     }
   };
 
   const handleUpdateAvatar = async (avatarUrl: string) => {
     const newUser = {
       ...user,
-      avatar_url: avatarUrl
-    }
+      avatar_url: avatarUrl,
+    };
 
     setUser(newUser as User);
-  }
-
-
+  };
   useEffect(() => {
     const { 'uplay.token': token } = parseCookies();
 
@@ -121,7 +118,10 @@ export default function AuthProvider({ children }) {
     const { data } = await api.post('/sessions', { email, password });
 
     setCookie(undefined, 'uplay.token', data.token, {
-      maxAge: 60 * 60 * 1, // 1 hour
+      maxAge: 60 * 5, // 5 minutes
+    });
+    setCookie(undefined, 'uplay.refresh_token', data.refresh_token, {
+      maxAge: 60 * 60 * 24 * 15, // 5 dias
     });
     // eslint-disable-next-line dot-notation
     api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
@@ -131,7 +131,7 @@ export default function AuthProvider({ children }) {
 
   async function signOut() {
     const { 'uplay.token': token } = parseCookies();
-    console.log('token', token);
+
     if (token) {
       destroyCookie(undefined, 'uplay.token');
       Router.reload();
@@ -146,7 +146,7 @@ export default function AuthProvider({ children }) {
         user,
         fillUserData,
         signOut,
-        handleUpdateAvatar
+        handleUpdateAvatar,
       }}
     >
       {children}

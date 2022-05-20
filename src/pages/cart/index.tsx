@@ -4,6 +4,7 @@ import Router from 'next/router';
 import { parseCookies } from 'nookies';
 import { useContext, useState } from 'react';
 
+import { formatPrice } from '../../common/formatPrice';
 import { Carousel } from '../../Components/Carousel';
 import CartCard from '../../Components/cartCard';
 import { AuthContext } from '../../contexts/AuthContext';
@@ -82,22 +83,17 @@ export default function Cart() {
 
   const { user } = useContext(AuthContext);
 
-  const getTotal = (
-    products = user?.cart.products,
-    productsQtn = user?.cart.productsQtn
-  ): string => {
-    let total = 0;
-    let value: string[] = [];
-    if (!_.isNil(products)) {
-      value = productsQtn?.map((product: ProductQtn) => {
-        // eslint-disable-next-line no-multi-assign
-        const newValue = (total += product.totalPrice);
+  const getTotal = (productsQtn = user?.cart.productsQtn): string => {
+    const total = formatPrice(
+      Number(
+        productsQtn?.reduce(
+          (sumTotal, product) => sumTotal + product.totalPrice,
+          0
+        ),
+      ),
+    );
 
-        return newValue.toFixed(2).toString().replace('.', ',');
-      });
-    }
-
-    return `R$ ${value.slice(-1)}`;
+    return total;
   };
 
   const handleProductQtn = (product: Product) => {

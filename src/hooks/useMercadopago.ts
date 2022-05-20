@@ -1,20 +1,34 @@
 import { useEffect, useState } from 'react';
 
-import { Mercadopago } from '../@types/Mercadopago/Mercadopago';
-
-const useMercadopago = () => {
-  const [mercadoPago, setMercadoPago] = useState<Mercadopago>();
+const useMercadopago = (publicKey: string) => {
+  const [mercadopago, setMercadopago] = useState<any>();
 
   useEffect(() => {
-    window.onload = () => {
-      const mercadopago = new MercadoPago(
-        'TEST-cb1365c9-25d3-4f1d-ae59-6340faca0e25',
-        
-      );
-      setMercadoPago(mercadopago);
+    const script = document.createElement('script');
+    script.src = 'https://sdk.mercadopago.com/js/v2';
+
+    script.addEventListener('load', () => {
+      setMercadopago(new window.MercadoPago(publicKey));
+    });
+
+    document.body.appendChild(script);
+
+    return () => {
+      const iframe = document.body.querySelector('iframe[src*="mercadolibre"]');
+
+      if (iframe) {
+        document.body.removeChild(iframe);
+      }
+
+      document.body.removeChild(script);
     };
-  }, [mercadoPago]);
-  return { mercadoPago };
+  }, []);
+
+  useEffect(() => {
+    console.log('chegou aqui no useEffect', mercadopago);
+  }, [mercadopago]);
+
+  return { mercadopago };
 };
 
 export { useMercadopago };

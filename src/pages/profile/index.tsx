@@ -159,42 +159,41 @@ export default function Profile() {
                 type="text"
                 register={register}
                 name="street"
-                defaultValue={user?.address[0].street}
-                valueDefault={user?.address[0].street}
+                defaultValue={user?.address && user?.address[0].street}
+                valueDefault={user?.address && user?.address[0].street}
               ></StyledInput>
               <StyledInput
                 label="Cidade"
                 type="text"
                 register={register}
                 name="city"
-                defaultValue={user?.address[0].city}
-                valueDefault={user?.address[0].city}
+                defaultValue={user?.address && user?.address[0].city}
+                valueDefault={user?.address && user?.address[0].city}
               ></StyledInput>
               <StyledInput
                 label="Número"
                 type="text"
                 register={register}
                 name="number"
-                defaultValue={user?.address[0].number}
-                valueDefault={user?.address[0].number}
+                defaultValue={user?.address && user?.address[0].number}
+                valueDefault={user?.address && user?.address[0].number}
               ></StyledInput>
               <StyledInput
                 label="Bairro"
                 type="text"
                 register={register}
                 name="district"
-                defaultValue={user?.address[0].district}
-                valueDefault={user?.address[0].district}
+                defaultValue={user?.address && user?.address[0].district}
+                valueDefault={user?.address && user?.address[0].district}
               ></StyledInput>
               <StyledInput
                 label="Estado"
                 type="text"
                 register={register}
                 name="state"
-                defaultValue={user?.address[0].state}
-                valueDefault={user?.address[0].state}
+                defaultValue={user?.address && user?.address[0].state}
+                valueDefault={user?.address && user?.address[0].state}
               ></StyledInput>
-
               <StyledButton type="submit">Atualizar dados</StyledButton>
             </form>
           </div>

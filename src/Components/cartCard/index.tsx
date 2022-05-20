@@ -3,9 +3,8 @@ import Image from 'next/image';
 import { useContext, useState } from 'react';
 import { FiMinus, FiPlus, FiTrash2 } from 'react-icons/fi';
 
-import { GetStringPrice } from '../../common/getStringPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { AuthContext } from '../../contexts/AuthContext';
-import { StyledSelect } from '../../pages/product/styles';
 import { api } from '../../service/api';
 import { Container, RoundedButton } from './styles';
 
@@ -134,9 +133,7 @@ export default function CartCard({ product, qtn }: ProductProps) {
           </div>
         </div>
         <div className="rigth">
-          <span className="price">
-            R$ {GetStringPrice.getStringPrice(product.price)}
-          </span>
+          <span className="price">R$ {getStringPrice(product.price)}</span>
         </div>
       </div>
       <div className="removeCart">

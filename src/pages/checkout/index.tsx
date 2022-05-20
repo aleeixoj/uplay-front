@@ -1,15 +1,25 @@
 import _ from 'lodash';
-import { GetServerSideProps } from 'next';
+import { GetServerSideProps, GetStaticProps } from 'next';
 import Router from 'next/router';
 import { parseCookies } from 'nookies';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { AiOutlineCloseCircle } from 'react-icons/ai';
 import ReactModal from 'react-modal';
 
+import { formatPrice } from '../../common/formatPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { Button } from '../../Components/Button';
+import { AuthContext } from '../../contexts/AuthContext';
 import { useMercadopago } from '../../hooks/useMercadopago';
 import { api } from '../../service/api';
-import { Box, CloseButton, Container, StyledForm } from './styles';
+import {
+  Box,
+  CloseButton,
+  Container,
+  InputContent,
+  StyledButtom,
+  StyledForm,
+} from './styles';
 
 const customStyle = {
   content: {
@@ -36,23 +46,55 @@ const customStyle = {
   },
 };
 
-export default function Checkout({ paymentUser }: any) {
-  const [openModalAddCard, setOpenModalAddCard] = useState(false);
-  const { mercadoPago } = useMercadopago();
+const sty = {
+  background: '#FAFAFA',
+  fontSize: '0.875rem',
+  top: '-0.5rem',
+  left: '0.8rem',
+  zIndex: 2,
+};
 
-  const handleOpenModal = async () => {
-    setOpenModalAddCard(!openModalAddCard);
+function ModalForm({ handleCloseModal }: any) {
+  const { user } = useContext(AuthContext);
+  const [saveDataValue, setSaveDataValue] = useState(true);
+  const { mercadopago } = useMercadopago(
+    'TEST-cb1365c9-25d3-4f1d-ae59-6340faca0e25',
+  );
+  const [labelStyle, setLabelStyle] = useState({});
+
+  function handleSaveDataChecked() {
+    setSaveDataValue(!saveDataValue);
+  }
+
+  function handleBlur(value: string) {
+    if (value) {
+      setLabelStyle(sty);
+    } else {
+      setLabelStyle({});
+    }
+  }
+
+  const getTotal = (productsQtn = user?.cart.productsQtn): string => {
+    const total = formatPrice(
+      Number(
+        productsQtn?.reduce(
+          (sumTotal, product) => sumTotal + product.totalPrice,
+          0,
+        ),
+      ),
+    );
+
+    return total.split('R$')[1].replace(',', '.');
   };
 
   function loadCardForm() {
-    const cardForm = mercadoPago?.cardForm({
-      amount: '105.9',
+    const cardForm = mercadopago?.cardForm({
+      amount: getTotal(),
       autoMount: true,
       form: {
         id: 'form-checkout',
         cardholderName: {
           id: 'form-checkout__cardholderName',
-          placeholder: 'Holder name',
         },
         // cardholderEmail: {
         //   id: 'form-checkout__cardholderEmail',
@@ -60,43 +102,40 @@ export default function Checkout({ paymentUser }: any) {
         // },
         cardNumber: {
           id: 'form-checkout__cardNumber',
-          placeholder: 'Card number',
         },
         cardExpirationMonth: {
           id: 'form-checkout__cardExpirationMonth',
-          placeholder: 'MM',
         },
         cardExpirationYear: {
           id: 'form-checkout__cardExpirationYear',
-          placeholder: 'YY',
         },
         securityCode: {
           id: 'form-checkout__securityCode',
-          placeholder: 'Security code',
         },
         installments: {
           id: 'form-checkout__installments',
-          placeholder: 'Installments',
+          placeholder: 'Parcelas',
         },
         identificationType: {
           id: 'form-checkout__identificationType',
         },
         identificationNumber: {
           id: 'form-checkout__identificationNumber',
-          placeholder: 'Identification number',
         },
         issuer: {
           id: 'form-checkout__issuer',
-          placeholder: 'Issuer',
+          placeholder: 'Banco emissor',
         },
       },
       callbacks: {
-        onFormMounted: (error) => {
+        onFormMounted: (error: Error) => {
           if (error) {
             return console.warn('Form Mounted handling error: ', error);
           }
           console.log('Form mounted');
+          return '';
         },
+
         onSubmit: (event: Event) => {
           event.preventDefault();
           const {
@@ -118,6 +157,8 @@ export default function Checkout({ paymentUser }: any) {
               transaction_amount: Number(amount),
               installments: Number(installments),
               description: 'Descrição do produto',
+              saveDataValue,
+              productsIds: user?.cart.productsIds,
               payer: {
                 email,
                 identification: {
@@ -137,13 +178,167 @@ export default function Checkout({ paymentUser }: any) {
     });
   }
 
-  useMemo(() => {
-    if (openModalAddCard === true) {
+  useEffect(() => {
+    if (mercadopago) {
       setTimeout(() => {
         loadCardForm();
       }, 500);
     }
-  }, [openModalAddCard]);
+  }, [saveDataValue, mercadopago]);
+
+  return (
+    <>
+      <CloseButton onClick={() => handleCloseModal(false)}>
+        <AiOutlineCloseCircle />
+      </CloseButton>
+
+      <StyledForm id="form-checkout">
+        <InputContent>
+          <label
+            style={labelStyle}
+            className="label"
+            htmlFor="form-checkout__cardholderName"
+          >
+            Número do cartão
+          </label>
+          <input
+            type="text"
+            name="cardNumber"
+            id="form-checkout__cardNumber"
+            onBlur={({ target }) => {
+              handleBlur(target.value);
+            }}
+          />
+        </InputContent>
+        <div className="year">
+          <InputContent>
+            <label
+              style={labelStyle}
+              className="label"
+              htmlFor="form-checkout__cardExpirationMonth"
+            >
+              Mês
+            </label>
+
+            <input
+              id="form-checkout__cardExpirationMonth"
+              name="cardExpirationMonth"
+              type="text"
+              maxLength={2}
+              onBlur={({ target }) => {
+                handleBlur(target.value);
+              }}
+            />
+          </InputContent>
+          /
+          <InputContent>
+            <label
+              style={labelStyle}
+              className="label"
+              htmlFor="form-checkout__cardExpirationYear"
+            >
+              Ano
+            </label>
+            <input
+              type="text"
+              name="expirationDate"
+              id="form-checkout__cardExpirationYear"
+              maxLength={2}
+              onBlur={({ target }) => {
+                handleBlur(target.value);
+              }}
+            />
+          </InputContent>
+          <InputContent>
+            <label
+              style={labelStyle}
+              className="label"
+              htmlFor="form-checkout__securityCode"
+            >
+              CVV
+            </label>
+            <input
+              type="text"
+              name="securityCode"
+              id="form-checkout__securityCode"
+              onBlur={({ target }) => {
+                handleBlur(target.value);
+              }}
+            />
+          </InputContent>
+        </div>
+        <InputContent>
+          <label
+            style={labelStyle}
+            htmlFor="form-checkout__cardholderName"
+            className="label"
+          >
+            Titular do cartão
+          </label>
+          <input
+            type="text"
+            name="cardholderName"
+            id="form-checkout__cardholderName"
+            onBlur={({ target }) => {
+              handleBlur(target.value);
+            }}
+          />
+        </InputContent>
+
+        <select
+          name="issuer"
+          id="form-checkout__issuer"
+          style={{ display: 'none' }}
+        ></select>
+        <div className="selects">
+          <select name="installments" id="form-checkout__installments"></select>
+          <select
+            name="identificationType"
+            id="form-checkout__identificationType"
+          ></select>
+        </div>
+        <InputContent>
+          <label
+            style={labelStyle}
+            htmlFor="form-checkout__identificationNumber"
+            className="label"
+          >
+            Documento
+          </label>
+          <input
+            type="text"
+            name="identificationNumber"
+            id="form-checkout__identificationNumber"
+            onBlur={({ target }) => {
+              handleBlur(target.value);
+            }}
+          />
+        </InputContent>
+        <div className="checkbox">
+          <label style={labelStyle} htmlFor="saveData" className="label">
+            Salvar dados do cartão
+          </label>
+          <input
+            type="checkbox"
+            name="saveData"
+            id="saveData"
+            defaultChecked={saveDataValue}
+            onChange={handleSaveDataChecked}
+          />
+        </div>
+        <StyledButtom type="submit" id="form-checkout__submit">
+          Pagar
+        </StyledButtom>
+      </StyledForm>
+    </>
+  );
+}
+export default function Checkout() {
+  const [openModalAddCard, setOpenModalAddCard] = useState(false);
+
+  const handleOpenModal = async () => {
+    setOpenModalAddCard(!openModalAddCard);
+  };
 
   return (
     <Container>
@@ -152,59 +347,15 @@ export default function Checkout({ paymentUser }: any) {
       <Box>
         <span onClick={() => handleOpenModal()}>+ Adicionar cartão</span>
       </Box>
-      <h4>Com outros meios de pagamento</h4>
-      <Box></Box>
 
       <ReactModal style={customStyle} isOpen={openModalAddCard}>
-        <CloseButton onClick={() => setOpenModalAddCard(false)}>
-          <AiOutlineCloseCircle />
-        </CloseButton>
-
-        <StyledForm id="form-checkout">
-          <input type="text" name="cardNumber" id="form-checkout__cardNumber" />
-          <input
-            id="form-checkout__cardExpirationMonth"
-            name="cardExpirationMonth"
-            type="text"
-          />
-          <input
-            type="text"
-            name="expirationDate"
-            id="form-checkout__cardExpirationYear"
-          />
-
-          <input
-            type="text"
-            name="cardholderName"
-            id="form-checkout__cardholderName"
-          />
-          <input
-            type="text"
-            name="securityCode"
-            id="form-checkout__securityCode"
-          />
-          <select name="issuer" id="form-checkout__issuer"></select>
-          <select
-            name="identificationType"
-            id="form-checkout__identificationType"
-          ></select>
-          <input
-            type="text"
-            name="identificationNumber"
-            id="form-checkout__identificationNumber"
-          />
-          <select name="installments" id="form-checkout__installments"></select>
-          <Button type="submit" id="form-checkout__submit">
-            Pagar
-          </Button>
-        </StyledForm>
+        <ModalForm handleCloseModal={setOpenModalAddCard} />
       </ReactModal>
     </Container>
   );
 }
 export const getServerSideProps: GetServerSideProps = async (ctx) => {
   const { 'uplay.token': token } = parseCookies(ctx);
-
   if (!token) {
     return {
       redirect: {
@@ -217,19 +368,3 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     props: {},
   };
 };
-
-// export const getStaticProps: GetStaticProps = async () => {
-//   const { data } = await api.get('/payments/user');
-
-//   const paymentUser = data.map((type: any) => ({
-//     id: type.id,
-//     name: type.name,
-//     thumbnail: type.thumbnail,
-//     payment_type_id: type.payment_type_id,
-//   }));
-
-//   return {
-//     props: { paymentUser },
-//     revalidate: 60 * 60 * 24,
-//   };
-// };

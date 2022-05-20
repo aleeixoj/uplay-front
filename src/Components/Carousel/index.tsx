@@ -10,7 +10,7 @@ import {
   MdOutlineArrowBackIos,
 } from 'react-icons/md';
 
-import { GetStringPrice } from '../../common/getStringPrice';
+import { getStringPrice } from '../../common/getStringPrice';
 import { useViewport } from '../../hooks/useViewPort';
 import { User } from '../../pages/product/[slug]';
 import { Box } from './styles';
@@ -168,7 +168,7 @@ function Carousel({ banners, productImages, products, type }: ICarouselProps) {
                       </div>
                       <div className="texts">
                         <span>{product.name}</span>
-                        <span>R$ {GetStringPrice.getStringPrice(product.price)}</span>
+                        <span>R$ {getStringPrice(product.price)}</span>
                       </div>
                     </a>
                   </Link>
