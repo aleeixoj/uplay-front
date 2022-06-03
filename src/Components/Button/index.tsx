@@ -3,9 +3,9 @@ import { ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { ButtonContainer } from './styles';
 
-type IProps = ButtonHTMLAttributes<{}> & {
-  children?: ReactNode;
-};
+interface IProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  children: ReactNode;
+}
 
 function Button({ children, ...rest }: IProps) {
   return (

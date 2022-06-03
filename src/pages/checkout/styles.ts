@@ -11,13 +11,21 @@ export const Container = styled.div`
   gap: 1rem;
 `;
 
+export const Grid = styled.div`
+  width: 100%;
+  display: grid;
+  grid-template-columns: min(90%, 30rem) min(90%, 30rem);
+  grid-template-rows: 400px;
+  justify-content: center;
+  gap: 1rem;
+`;
+
 export const Box = styled.div`
   display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  justify-content: flex-start;
   flex-direction: column;
   border-radius: 1rem;
-  width: min(90%, 30rem);
+  width: 100%;
 
   padding: 1rem;
   background: ${(props) => props.theme.colors.base.bg2};

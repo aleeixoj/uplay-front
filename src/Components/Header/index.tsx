@@ -129,7 +129,9 @@ function Header() {
                     <StyledTrigger>Categorias</StyledTrigger>
                     <StyledIndicator />
                     <StyledContent>
-                      <StyledLink href="/">Acessórios</StyledLink>
+                      <Link href="/" passHref>
+                        <StyledLink asChild>Acessórios</StyledLink>
+                      </Link>
                       <StyledLink href="/">Áudio e vídeo</StyledLink>
                       <StyledLink href="/">Capinhas</StyledLink>
                       <StyledLink href="/">Peliculas</StyledLink>
@@ -174,9 +176,11 @@ function Header() {
                       </div>
 
                       <div className="userName">
-                        <StyledLink href="/profile">
-                          <span>{user?.name.split(' ')[0]}</span>
-                        </StyledLink>
+                        <Link href="/profile" passHref>
+                          <StyledLink>
+                            <span>{user?.name.split(' ')[0]}</span>
+                          </StyledLink>
+                        </Link>
                       </div>
                     </StyledItem>
 

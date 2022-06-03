@@ -9,6 +9,7 @@ import ReactModal from 'react-modal';
 import { formatPrice } from '../../common/formatPrice';
 import { getStringPrice } from '../../common/getStringPrice';
 import { Button } from '../../Components/Button';
+import { AddressSelect } from '../../Components/Address/AddressSelect';
 import { AuthContext } from '../../contexts/AuthContext';
 import { useMercadopago } from '../../hooks/useMercadopago';
 import { api } from '../../service/api';
@@ -19,6 +20,7 @@ import {
   InputContent,
   StyledButtom,
   StyledForm,
+  Grid
 } from './styles';
 
 const customStyle = {
@@ -38,11 +40,11 @@ const customStyle = {
     border: '1px solid #FAFAFA',
     background: '#FAFAFA',
     boxShadow: '0px 0px 10px 1px rgba(0,0,0,0.5)',
-    position: 'relative',
+    position: 'relative'
   },
   overlay: {
     zIndex: '999',
-    background: 'rgba(0,0,0,0.2)',
+    background: 'rgba(0,0,0,0.2)'
   },
 };
 
@@ -51,14 +53,14 @@ const sty = {
   fontSize: '0.875rem',
   top: '-0.5rem',
   left: '0.8rem',
-  zIndex: 2,
+  zIndex: 2
 };
 
 function ModalForm({ handleCloseModal }: any) {
   const { user } = useContext(AuthContext);
   const [saveDataValue, setSaveDataValue] = useState(true);
   const { mercadopago } = useMercadopago(
-    'TEST-cb1365c9-25d3-4f1d-ae59-6340faca0e25',
+    'TEST-cb1365c9-25d3-4f1d-ae59-6340faca0e25'
   );
   const [labelStyle, setLabelStyle] = useState({});
 
@@ -79,7 +81,7 @@ function ModalForm({ handleCloseModal }: any) {
       Number(
         productsQtn?.reduce(
           (sumTotal, product) => sumTotal + product.totalPrice,
-          0,
+          0
         ),
       ),
     );
@@ -94,33 +96,33 @@ function ModalForm({ handleCloseModal }: any) {
       form: {
         id: 'form-checkout',
         cardholderName: {
-          id: 'form-checkout__cardholderName',
+          id: 'form-checkout__cardholderName'
         },
         cardNumber: {
-          id: 'form-checkout__cardNumber',
+          id: 'form-checkout__cardNumber'
         },
         cardExpirationMonth: {
-          id: 'form-checkout__cardExpirationMonth',
+          id: 'form-checkout__cardExpirationMonth'
         },
         cardExpirationYear: {
-          id: 'form-checkout__cardExpirationYear',
+          id: 'form-checkout__cardExpirationYear'
         },
         securityCode: {
-          id: 'form-checkout__securityCode',
+          id: 'form-checkout__securityCode'
         },
         installments: {
           id: 'form-checkout__installments',
-          placeholder: 'Parcelas',
+          placeholder: 'Parcelas'
         },
         identificationType: {
-          id: 'form-checkout__identificationType',
+          id: 'form-checkout__identificationType'
         },
         identificationNumber: {
-          id: 'form-checkout__identificationNumber',
+          id: 'form-checkout__identificationNumber'
         },
         issuer: {
           id: 'form-checkout__issuer',
-          placeholder: 'Banco emissor',
+          placeholder: 'Banco emissor'
         },
       },
       callbacks: {
@@ -142,7 +144,7 @@ function ModalForm({ handleCloseModal }: any) {
             token,
             installments,
             identificationNumber,
-            identificationType,
+            identificationType
           } = cardForm.getCardFormData();
 
           api
@@ -159,7 +161,7 @@ function ModalForm({ handleCloseModal }: any) {
                 email,
                 identification: {
                   type: identificationType,
-                  number: identificationNumber,
+                  number: identificationNumber
                 },
               },
             })
@@ -169,7 +171,7 @@ function ModalForm({ handleCloseModal }: any) {
                 Router.push(`order/${data.order.id}`);
               }
             });
-        },
+        }
       },
     });
   }
@@ -340,9 +342,24 @@ export default function Checkout() {
     <Container>
       <h3>Como você prefere pagar?</h3>
       <h4>Com cartão</h4>
-      <Box>
-        <span onClick={() => handleOpenModal()}>+ Adicionar cartão</span>
-      </Box>
+
+      <Grid>
+        <Box>
+          <h3>Endereço de Entrega</h3>
+          <AddressSelect
+            name="address"
+            handleSelect={(option) => { console.log('option >>>', option) }}
+            options={[
+              { description: 'teste', id: '23847278346232' },
+              { description: 'teste2', id: '23424242422' },
+            ]}
+            defaultSelected="23847278346232" />
+        </Box>
+        <Box>
+          <h3>Método de Pagamento</h3>
+          <span onClick={() => handleOpenModal()}>+ Adicionar cartão</span>
+        </Box>
+      </Grid>
 
       <ReactModal style={customStyle} isOpen={openModalAddCard}>
         <ModalForm handleCloseModal={setOpenModalAddCard} />
@@ -356,11 +373,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       redirect: {
         destination: '/login',
-        permanent: false,
+        permanent: false
       },
     };
   }
   return {
-    props: {},
+    props: {}
   };
 };

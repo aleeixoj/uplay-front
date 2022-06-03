@@ -25,6 +25,12 @@ export const Container = styled.div`
 
 export const StyledProfileCard = styled(ProfileCard)`
   cursor: pointer;
+  transition: all ease 0.2s;
+  width: 100%;
+  border-radius: 1rem;
+  &:hover {
+    background: ${props => props.theme.colors.gray[200]}
+  }
 `;
 
 export const Box = styled.div`

@@ -101,7 +101,7 @@ export default function AuthProvider({ children }) {
   const handleUpdateAvatar = async (avatarUrl: string) => {
     const newUser = {
       ...user,
-      avatar_url: avatarUrl,
+      avatar_url: avatarUrl
     };
 
     setUser(newUser as User);
@@ -118,10 +118,10 @@ export default function AuthProvider({ children }) {
     const { data } = await api.post('/sessions', { email, password });
 
     setCookie(undefined, 'uplay.token', data.token, {
-      maxAge: 60 * 15, // 15 minutes
+      maxAge: 60 * 60 * 15 // 15 minutes
     });
     setCookie(undefined, 'uplay.refresh_token', data.refresh_token, {
-      maxAge: 60 * 60 * 24 * 15, // 5 dias
+      maxAge: 60 * 60 * 24 * 15 // 15 dias
     });
     // eslint-disable-next-line dot-notation
     api.defaults.headers['Authorization'] = `Bearer ${data.token}`;
@@ -146,7 +146,7 @@ export default function AuthProvider({ children }) {
         user,
         fillUserData,
         signOut,
-        handleUpdateAvatar,
+        handleUpdateAvatar
       }}
     >
       {children}

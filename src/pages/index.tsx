@@ -5,8 +5,9 @@ import { FaBarcode, FaQrcode } from 'react-icons/fa';
 import { FiCreditCard } from 'react-icons/fi';
 
 import { Carousel } from '../Components/Carousel';
+import { LinkAnchor } from '../Components/LinkAnchor';
 import { api } from '../service/api';
-import { Container, Flex, StyledButton, Payments } from '../styles/Home';
+import { Container, Flex, Payments } from '../styles/Home';
 
 const Home: NextPage = () => {
   const [products, setProducts] = useState([]);
@@ -69,7 +70,7 @@ const Home: NextPage = () => {
       <Flex>
         <span>Aqui você encontra de tudo!</span>
         <Link href="/categories">
-          <StyledButton>navegar</StyledButton>
+          <LinkAnchor>navegar</LinkAnchor>
         </Link>
       </Flex>
 

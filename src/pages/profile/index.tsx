@@ -7,6 +7,8 @@ import { FaSignOutAlt } from 'react-icons/fa';
 import { FiMapPin, FiLock, FiShoppingBag } from 'react-icons/fi';
 import { IoPerson } from 'react-icons/io5';
 import ReactModal from 'react-modal';
+import ClipLoader from 'react-spinners/ClipLoader';
+import { toast } from 'react-toastify';
 
 import { Button } from '../../Components/Button';
 import ArchInput from '../../Components/InputFile';
@@ -56,6 +58,7 @@ export default function Profile() {
   const [icon, setIcon] = useState('none');
   const { handleSubmit, register } = useForm();
 
+  const [updatingAddress, setUpdatingAdress] = useState(false);
   const [userDataModal, setUserDataModal] = useState(false);
   const [userAddressModal, setUserAddressModal] = useState(false);
   const [userSecurityModal, setUserSecurityModal] = useState(false);
@@ -65,12 +68,25 @@ export default function Profile() {
   }
 
   const handleEditUserData = async (data: any) => {
-    if (data.city) {
-      await api.put('/users/update', { address: [data] });
+    try {
+      setUpdatingAdress(true);
+
+      if (data.city) {
+        await api.put('/users/update', { address: [data] });
+      }
+    } finally {
+      setUpdatingAdress(false);
+      setUserAddressModal(false);
+      toast.success('Endereço Atualizado!', {
+        position: 'top-right',
+        pauseOnHover: true,
+        theme: 'colored',
+      });
     }
   };
 
   const handleSubmitAvatar = async (file: any) => {
+    const [inputOn, setInputOn] = useState('none')
     if (!file) return;
     const formData = new FormData();
     formData.append('avatar', file);
@@ -85,16 +101,6 @@ export default function Profile() {
     <Container>
       <div className="avatar">
         <Avatar>
-          {/* <div
-            className="icon"
-            style={{
-              display: icon,
-            }}
-          >
-            <div className="cam">
-              <FiCamera />
-            </div>
-          </div> */}
           <AvatarImage src={user?.avatar_url} alt={user?.name} />
           <AvatarFallback delayMs={600}>
             {user?.name
@@ -111,6 +117,7 @@ export default function Profile() {
             name="input"
             register={register}
             onChange={handleSubmitAvatar}
+            style={{ display: `${inputOn}` }}
           />
         </div>
       </div>
@@ -194,7 +201,13 @@ export default function Profile() {
                 defaultValue={user?.address && user?.address[0].state}
                 valueDefault={user?.address && user?.address[0].state}
               ></StyledInput>
-              <StyledButton type="submit">Atualizar dados</StyledButton>
+              <StyledButton type="submit">
+                {updatingAddress ? (
+                  <ClipLoader color="#FFF" />
+                ) : (
+                  'Atualizar dados'
+                )}
+              </StyledButton>
             </form>
           </div>
         </UserData>
@@ -258,11 +271,11 @@ export const getServerSideProps: GetServerSideProps = async (ctx) => {
     return {
       redirect: {
         destination: '/',
-        permanent: false,
+        permanent: false
       },
     };
   }
   return {
-    props: {},
+    props: {}
   };
 };

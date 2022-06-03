@@ -1,12 +1,15 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import Router from 'next/router';
+import { useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import ReactModal from 'react-modal';
+import Swal from 'sweetalert2';
 
-import { RoundedButton } from '../../Components/Header/styles';
-import { AuthContext } from '../../contexts/AuthContext';
+import { RoundedButton } from '../../../Components/Header/styles';
+import { api } from '../../../service/api';
 import {
   Container,
   Logo,
@@ -23,14 +26,23 @@ interface IInputProps {
   password: string;
 }
 
-const Login: NextPage = () => {
+const Reset: NextPage = () => {
+  const { handleSubmit, register } = useForm();
   const [eye, setEye] = useState(true);
   const [typePass, setTypePass] = useState('password');
-  const { handleSubmit, register } = useForm();
-  const { signIn } = useContext(AuthContext);
 
-  const handleSignIn: SubmitHandler<IInputProps> = async (data: any) => {
-    await signIn(data);
+  const [, token] = Router.asPath.split('=');
+
+  const handleResetPass: SubmitHandler<IInputProps> = async (data: any) => {
+    const response = await api.post('/password/reset', data, {
+      params: {
+        token,
+      },
+    });
+
+    if (response.status === 200) {
+      Router.push('/login');
+    }
   };
 
   const handleEye = () => {
@@ -66,19 +78,12 @@ const Login: NextPage = () => {
 
         <StyledForm
           onSubmit={handleSubmit((data: any) => {
-            handleSignIn(data);
+            handleResetPass(data);
           })}
         >
           <StyledInput
-            type="email"
-            label="E-mail"
-            register={register}
-            name="email"
-            isRequired={true}
-          ></StyledInput>
-          <StyledInput
             type={typePass}
-            label="Senha"
+            label="Nova Senha"
             register={register}
             name="password"
             isRequired={true}
@@ -91,19 +96,8 @@ const Login: NextPage = () => {
               {eye ? <FiEye /> : <FiEyeOff />}
             </RoundedButton>
           </StyledInput>
-          <Link href="/password/reset">
-            <a>Esqueci a senha</a>
-          </Link>
           <StyledButton type="submit"> Enviar </StyledButton>
         </StyledForm>
-        <span className="notAccount">
-          Vocẽ ainda não possui uma conta?
-          <Link href="/register">
-            <a>
-              <strong> Registre-se agora</strong>
-            </a>
-          </Link>
-        </span>
       </Top>
 
       {/* <Box>
@@ -126,4 +120,4 @@ const Login: NextPage = () => {
   );
 };
 
-export default Login;
+export default Reset;

@@ -40,7 +40,25 @@ const Register: NextPage = () => {
   const { signIn } = useContext(AuthContext);
 
   const onSubmit: SubmitHandler<IInputProps> = async (data: any) => {
-    const createUser = await api.post('/users/create', data);
+    const createUser = await api.post('/users/create', {
+      first_name: data.first_name,
+      last_name: data.last_name,
+      email: data.email,
+      password: data.password,
+      password_confirmed: data.password,
+      phone: data.phone,
+      address: {
+        name: data.addressName,
+        cep: data.cep,
+        street: data.street,
+        number: data.number,
+        city: data.city,
+        district: data.district,
+        state: data.state,
+        province: data.province
+      }
+
+    });
 
     if (createUser.status === 201) {
       signIn(createUser.data);

@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-import { Button } from '../Components/Button';
+import { LinkAnchor } from '../Components/LinkAnchor';
 
 const Container = styled.div`
   display: flex;
@@ -90,9 +90,9 @@ const Payments = styled.div`
   }
 `;
 
-const StyledButton = styled(Button)`
+const StyledLinkAnchor = styled(LinkAnchor)`
   width: 12rem;
   background: ${(props) => props.theme.colors.orange[800]};
 `;
 
-export { Container, Flex, StyledButton, Payments };
+export { Container, Flex, StyledLinkAnchor, Payments };

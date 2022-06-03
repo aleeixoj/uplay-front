@@ -1,12 +1,11 @@
 import type { NextPage } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useContext, useState } from 'react';
+import Router from 'next/router';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { FiEye, FiEyeOff } from 'react-icons/fi';
+import Swal from 'sweetalert2';
 
-import { RoundedButton } from '../../Components/Header/styles';
-import { AuthContext } from '../../contexts/AuthContext';
+import { api } from '../../../service/api';
 import {
   Container,
   Logo,
@@ -14,8 +13,7 @@ import {
   StyledInput,
   StyledButton,
   StyledForm,
-  Box,
-  Top,
+  Top
 } from './styles';
 
 interface IInputProps {
@@ -23,23 +21,21 @@ interface IInputProps {
   password: string;
 }
 
-const Login: NextPage = () => {
-  const [eye, setEye] = useState(true);
-  const [typePass, setTypePass] = useState('password');
+const Forgot: NextPage = () => {
   const { handleSubmit, register } = useForm();
-  const { signIn } = useContext(AuthContext);
 
   const handleSignIn: SubmitHandler<IInputProps> = async (data: any) => {
-    await signIn(data);
-  };
+    const response = await api.post('/password/forgot', data);
 
-  const handleEye = () => {
-    if (eye === true) {
-      setEye(false);
-      setTypePass('text');
-    } else {
-      setEye(true);
-      setTypePass('password');
+    if (response.status === 200) {
+      const alert = await Swal.fire({
+        title: 'Recuperar senha',
+        text: 'Em breve você receberá um link por e-mail, para recuperar sua senha',
+      });
+
+      if (alert) {
+        Router.push('/login');
+      }
     }
   };
 
@@ -76,34 +72,8 @@ const Login: NextPage = () => {
             name="email"
             isRequired={true}
           ></StyledInput>
-          <StyledInput
-            type={typePass}
-            label="Senha"
-            register={register}
-            name="password"
-            isRequired={true}
-          >
-            <RoundedButton
-              style={{ background: 'none' }}
-              type="button"
-              onClick={handleEye}
-            >
-              {eye ? <FiEye /> : <FiEyeOff />}
-            </RoundedButton>
-          </StyledInput>
-          <Link href="/password/reset">
-            <a>Esqueci a senha</a>
-          </Link>
           <StyledButton type="submit"> Enviar </StyledButton>
         </StyledForm>
-        <span className="notAccount">
-          Vocẽ ainda não possui uma conta?
-          <Link href="/register">
-            <a>
-              <strong> Registre-se agora</strong>
-            </a>
-          </Link>
-        </span>
       </Top>
 
       {/* <Box>
@@ -126,4 +96,4 @@ const Login: NextPage = () => {
   );
 };
 
-export default Login;
+export default Forgot;
